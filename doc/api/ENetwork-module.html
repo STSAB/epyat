@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>ENetwork</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="https://code.google.com/p/epyat">epyat</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Module&nbsp;ENetwork
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="ENetwork-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module ENetwork</h1><p class="nomargin-top"><span class="codelink"><a href="ENetwork-pysrc.html">source&nbsp;code</a></span></p>
+<p>The ENetwork module gives information about the network the module is 
+  connected to and its connection status (like signal strength and 
+  quality). This module allows to configure the module's network settings, 
+  too.</p>
+  <p>All functions in this module may throw an EInterface.CommandError or 
+  an EInterface.TimeoutException, if a command used by this function 
+  couldn't be executed properly. However, this should only happen in these 
+  functions, where the exception is documented.</p>
+
+<hr />
+<div class="fields">      <p><strong>Author:</strong>
+        Patrick Strobel
+      </p>
+      <p><strong>Version:</strong>
+        $Revision: 14 $
+      </p>
+</div><!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">({&quot;status&quot;: int, &quot;name&quot;: string, 
+      &quot;code&quot;: int}, ...)</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ENetwork-module.html#getAvailableOperators" class="summary-sig-name">getAvailableOperators</a>()</span><br />
+      Gets all available cellular networks.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ENetwork-pysrc.html#getAvailableOperators">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">{&quot;mode&quot;: int, &quot;operator&quot;: int/string}</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ENetwork-module.html#getConnectedOperator" class="summary-sig-name">getConnectedOperator</a>(<span class="summary-sig-arg">code</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Gets the network operator the device is currently connected to.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ENetwork-pysrc.html#getConnectedOperator">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">{&quot;status&quot;: int, &quot;area&quot;: string, &quot;cell&quot;:
+      string}</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ENetwork-module.html#getNetworkStatus" class="summary-sig-name">getNetworkStatus</a>()</span><br />
+      Gets the the status of the device's network connection/registration.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ENetwork-pysrc.html#getNetworkStatus">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">{&quot;strength&quot;: int, &quot;error&quot;: int}</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ENetwork-module.html#getSignalQuality" class="summary-sig-name">getSignalQuality</a>()</span><br />
+      Gets the signal strength and error rate.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ENetwork-pysrc.html#getSignalQuality">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="ENetwork-module.html#setOperator" class="summary-sig-name">setOperator</a>(<span class="summary-sig-arg">mode</span>,
+        <span class="summary-sig-arg">operator</span>)</span><br />
+      Sets the network operator and registration mode.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="ENetwork-pysrc.html#setOperator">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MODE_AUTOMATIC"></a><span class="summary-name">MODE_AUTOMATIC</span> = <code title="0">0</code><br />
+      The operator is selected automatically.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MODE_MANUAL"></a><span class="summary-name">MODE_MANUAL</span> = <code title="1">1</code><br />
+      The operator is selected manually.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MODE_DEREGISTER"></a><span class="summary-name">MODE_DEREGISTER</span> = <code title="2">2</code><br />
+      The module deregisters itself from the network.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="MODE_AUTOSWITCH"></a><span class="summary-name">MODE_AUTOSWITCH</span> = <code title="4">4</code><br />
+      The operator is selected manually but module will switch to automatic
+      mode if manual selection fails.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="NETWORK_NOT_SEARCHING"></a><span class="summary-name">NETWORK_NOT_SEARCHING</span> = <code title="0">0</code><br />
+      The module is not registered to a network and is not searching for 
+      one.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="NETWORK_REGISTERED_HOME"></a><span class="summary-name">NETWORK_REGISTERED_HOME</span> = <code title="1">1</code><br />
+      The module is registered to the home network, roaming is disabled.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="NETWORK_SEARCHING"></a><span class="summary-name">NETWORK_SEARCHING</span> = <code title="2">2</code><br />
+      The module is not registered to a network but is searching for one.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="NETWORK_DENIED"></a><span class="summary-name">NETWORK_DENIED</span> = <code title="3">3</code><br />
+      The network registration has been denied.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="NETWORK_UNKNOWN"></a><span class="summary-name">NETWORK_UNKNOWN</span> = <code title="4">4</code><br />
+      The modules network status is unknown.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="NETWORK_REGISTERED_ROAMING"></a><span class="summary-name">NETWORK_REGISTERED_ROAMING</span> = <code title="5">5</code><br />
+      The module is registered to a foreign network and roaming is enabled.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="OPERATOR_UNKNOWN"></a><span class="summary-name">OPERATOR_UNKNOWN</span> = <code title="0">0</code><br />
+      The operator is unknown.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="OPERATOR_AVAILABLE"></a><span class="summary-name">OPERATOR_AVAILABLE</span> = <code title="1">1</code><br />
+      The operator is available.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="OPERATOR_CURRENT"></a><span class="summary-name">OPERATOR_CURRENT</span> = <code title="2">2</code><br />
+      The module is currently registered to this operator.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="OPERATOR_FORBIDDEN"></a><span class="summary-name">OPERATOR_FORBIDDEN</span> = <code title="3">3</code><br />
+      The module cannot connect to this operator.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="None">None</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="getAvailableOperators"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getAvailableOperators</span>()</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ENetwork-pysrc.html#getAvailableOperators">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Gets all available cellular networks.</p>
+  <p>May take up to 1 minute.</p>
+  <p>Command: AT+COPS</p>
+  <dl class="fields">
+    <dt>Returns: ({&quot;status&quot;: int, &quot;name&quot;: string, 
+      &quot;code&quot;: int}, ...)</dt>
+        <dd>Available networks as tuple. Each entry in the returned tuple is 
+          a dictionary that represents a single network operator. The 
+          dictionary has three keys: <code>status</code>, <code>name</code>
+          and <code>code</code>. The key <code>status</code> contains the 
+          status of the operator and is equivalent to on of the 
+          <code>OPERATOR_...</code> constants. The key <code>name</code> 
+          stores the operator's name and <code>code</code> stores the 
+          operator's code (country code [3] + network code [2 or 3]).</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="EInterface.CommandError-class.html">EInterface.CommandError</a></strong></code> - Thrown, if the module cannot register to a network (bad connection 
+        etc.).</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getConnectedOperator"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getConnectedOperator</span>(<span class="sig-arg">code</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ENetwork-pysrc.html#getConnectedOperator">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Gets the network operator the device is currently connected to.</p>
+  <p>Command: AT+COPS</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>code</code></strong> - If set to true, the returned operator-field will contain the 
+          operator's code. Otherwise, it contains the operator's name.</li>
+    </ul></dd>
+    <dt>Returns: {&quot;mode&quot;: int, &quot;operator&quot;: int/string}</dt>
+        <dd>Information about the connection as dictionary with the keys 
+          <code>mode</code> and <code>operator</code>. <code>mode</code> 
+          contains the connection mode and is equivalent to one of the 
+          <code>MODE_...</code> constants. <code>operator</code> stores the
+          operator the module is connected to or <code>None</code> if the 
+          module is not registered to a network.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getNetworkStatus"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNetworkStatus</span>()</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ENetwork-pysrc.html#getNetworkStatus">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Gets the the status of the device's network 
+  connection/registration.</p>
+  <p>Command: AT+CREG</p>
+  <dl class="fields">
+    <dt>Returns: {&quot;status&quot;: int, &quot;area&quot;: string, &quot;cell&quot;:
+      string}</dt>
+        <dd>The returned dictionary contatins three keys: 
+          <code>status</code>, <code>area</code> and <code>cell</code>. The
+          key <code>status</code> contains the network registration status.
+          Its value is equivalent to on of the <code>NETWORK_...</code> 
+          constants. The key <code>area</code> contains the cell's area 
+          code the module is registered to and <code>cell</code> contains 
+          this cell's ID. <code>area</code> and <code>cell</code> are set 
+          to <code>None</code> if the module is not registered to any 
+          network.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getSignalQuality"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSignalQuality</span>()</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ENetwork-pysrc.html#getSignalQuality">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Gets the signal strength and error rate.</p>
+  <p>Command: AT+CSQ</p>
+  <dl class="fields">
+    <dt>Returns: {&quot;strength&quot;: int, &quot;error&quot;: int}</dt>
+        <dd>The returned dictionary contains two keys: <code>strength</code> 
+          and <code>error</code>. The key <code>strength</code> containts 
+          the singal strength having a value set to 99 if the module is not
+          connected or the strength is unknown or a value between 0 and 31 
+          for strength between -113 dBm and -51 dBm. The key 
+          <code>error</code> contains the the error rate having a value set
+          to 99 if the module is not connected or the error rate is unknown
+          or a value between 0 and 7 for rates between 0.2 % and 12.8 %.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setOperator"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setOperator</span>(<span class="sig-arg">mode</span>,
+        <span class="sig-arg">operator</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="ENetwork-pysrc.html#setOperator">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Sets the network operator and registration mode.</p>
+  <p>Command: AT+COPS</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>mode</code></strong> (int) - The connection/registration mode. Must be on of the 
+          <code>MODE_...</code> constants.</li>
+        <li><strong class="pname"><code>operator</code></strong> (int/string) - The operator the module should connect to. Only used when mode is
+          set to <code>MODE_MANUAL</code> or <code>MODE_AUTOSWITCH</code>. 
+          Operator can be set as code (integer) or as operator name 
+          (string).</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="https://code.google.com/p/epyat">epyat</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Oct 01 17:02:04 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
