@@ -117,11 +117,7 @@ def sendCommand(command, timeout = 5):
         #print "loop"
         res = res + MDM.receive(1)
 
-        # Read until a string is read that indicates the respone's end
-        if (res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) != -1):
-            end = res.rfind("%sOK%s" % (NEWLINE, NEWLINE))
-            return __responseToTuple(res[:end].strip(), command);
-            #return res[:end].strip().split(NEWLINE)
+
 
         if (res.rfind("%sERROR%s" % (NEWLINE, NEWLINE)) != -1):
             raise CommandError(0)
@@ -130,6 +126,12 @@ def sendCommand(command, timeout = 5):
             start = res.rfind("%s+CME ERROR:" % NEWLINE) + 14
             code = res[start:].strip()
             raise CommandError(int(code))
+
+        # Read until a string is read that indicates the respone's end
+        if (res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) != -1):
+            end = res.rfind("%sOK%s" % (NEWLINE, NEWLINE))
+            return __responseToTuple(res[:end].strip(), command);
+            #return res[:end].strip().split(NEWLINE)
 
     raise TimeoutException("Timeout reached while reading from the AT interface")
 
