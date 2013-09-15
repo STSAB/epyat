@@ -32,7 +32,7 @@ import EBuffer
 NEWLINE = "\r\n"
 """ Line seperator used by the module. """
 
-class TimeoutException(IOError):
+class TimeoutException:
     """
     The TimoutException is thrown when the timeout is reached while waiting
     for a "OK", "ERROR" or "+CME ERROR:" response from the module.
@@ -40,7 +40,7 @@ class TimeoutException(IOError):
 
     pass
 
-class CommandError(IOError):
+class CommandError:
     """
     The CommandError is thrown when the module returned no "OK" message for
     a specific AT-command.
