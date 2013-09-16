@@ -134,7 +134,7 @@ def sendCommand(command, timeout = 5):
             return __responseToTuple(res[:end].strip(), command);
             #return res[:end].strip().split(NEWLINE)
 
-    raise TimeoutException("Timeout reached while reading from the AT interface")
+    raise TimeoutException #("Timeout reached while reading from the AT interface")
 
 
 def __responseToTuple(res, command):
