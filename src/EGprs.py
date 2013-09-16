@@ -116,7 +116,7 @@ def deactivate(cid):
 def active(cid):
     #res like [''],('2,0',),('1,0', '2,0')
 
-    res=EInterface.sendCommand("AT#SGACT?")
+    res=EInterface.sendCommand("AT#SGACT?",20)
     if res == "":
         return None
     for c in res:
@@ -172,6 +172,14 @@ def init():
     reset_all()
 
     #set default config
+    res=EInterface.sendCommand("AT#SCFG=1,1,1500,90,600,50")
+    res=EInterface.sendCommand("AT#SCFGEXT=1,2,0,10,0,0")
+    res=EInterface.sendCommand("AT#SCFGEXT=1,2,0,10,0,0")
+
+    res=EInterface.sendCommand("AT#SCFG=2,1,1500,90,600,50")
+    res=EInterface.sendCommand("AT#SCFGEXT=2,2,0,10,0,0")
+    res=EInterface.sendCommand("AT#SCFGEXT=2,2,0,10,0,0")
+
 
     create_context(1)
     create_context(2)
@@ -183,7 +191,9 @@ def init():
 
 
 
-#init()
+
+
+init()
 
 
 
