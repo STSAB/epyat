@@ -16,34 +16,17 @@ class ESocket:
         log.debug("Create ESocket:%s:%s,%s" % (self.host, self.port, self.connId))
         self.close()
 
-
-
-    def connected(self):
-        res=EInterface.sendCommand("AT#CGPADDR=%s" % self.connId)
-        return res
-
     def send(self, data):
         #TODO everything
         #move out the command logic and handel that in the EInterface instead of here
         #if socket is closed open it and try to activate
         if not self.status():
-            log.debug("Socket is closed, start over and try to open")
-            i=0
-            while 1:
-                try:
-
-                    if not EGprs.is_active_ctx(self.connId):
-                        EGprs.activate_ctx(self.connId)
+            if not EGprs.is_active_ctx(self.connId):
+                EGprs.activate_ctx(self.connId)
 
                     #create the socket, dial out using command mode
-                    res = EInterface.sendCommand('AT#SD=%s,0,%s,"%s",0,0,1' % (self.connId, self.port, self.host))
-                    break
-                except EInterface.TimeoutException:
-                    i=i+1
-                    log.debug("Socket start send: timeout exception")
-                    #if we have done this for a while raise and error instead
-                    raise  EInterface.TimeoutException("Timeout reached while reading from the AT interface")
-                    
+            res = EInterface.sendCommand('AT#SD=%s,0,%s,"%s",0,0,1' % (self.connId, self.port, self.host), 180)
+
         #send data in 1024 chunk's
         length = len(data)
 
@@ -91,12 +74,9 @@ class ESocket:
 
     def status(self):
         #TODO examples, add info from AT# AT#SLASTCLOUSURE
-        res = EInterface.sendCommand("AT#SS=%s" % (self.connId))
-        log.debug("SS:" + str(res))
-        try:
-            return int(res[0].split(",")[1])
-        except:
-            return 0
+        res = EInterface.sendCommand("AT#SS=%s" % (self.connId))[0].split(",")[1]
+
+        return int(res)
 
     def close(self):
         res=EInterface.sendCommand("AT#SH=%i" % self.connId,20)
