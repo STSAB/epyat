@@ -24,7 +24,7 @@ def suite():
     for item in res:
         if item.find(".pyo") != -1:
             continue
-        if item.find("test_EH") != -1:
+        if item.find("test_ES") != -1:
             filename=item.split(",")[0].strip().replace('"',"")
             #remove extension
             filename=filename.split(".")[0]
