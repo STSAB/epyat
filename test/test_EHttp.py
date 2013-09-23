@@ -5,7 +5,7 @@ import EGprs
 import ESocket
 from logger import log
 
-
+EGprs.init()
 
 CONTENT_TYPE = "application/x-stsolutions-protobuf-car"
 
@@ -13,7 +13,7 @@ CONTENT_TYPE = "application/x-stsolutions-protobuf-car"
 class HttpServiceTest(unittest.TestCase):
     def setUp(self):
         pass
-        #EGprs.init()
+
 
 
     def tearDown(self):
@@ -22,8 +22,8 @@ class HttpServiceTest(unittest.TestCase):
 
     #@unittest.skip("skip sending")
     def testReceivingConfiguration(self):
+        log.debug("testReceivingConfiguration")
         size=4000
-
 
         host="krylboc.se"
         port=9000
@@ -46,20 +46,21 @@ class HttpServiceTest(unittest.TestCase):
 
         data_size=0
         while data_size< content_length:
+            log.debug("Get reading ..")
             s=requests.status()
             res=response.getContent()
             MOD.sleep(1)
             data_size=data_size+len(res)
 
             log.debug("Getting out: %s" % data_size)
-        self.assertEqual(data_size,size)
+        assert data_size == size
 
 
 
 
     #@unittest.skip("skip sending")
     def testSendConfiguration(self):
-
+        log.debug("testSendConfiguration")
 
         CONTENT_TYPE="text/plain"
 
@@ -68,19 +69,28 @@ class HttpServiceTest(unittest.TestCase):
         selector="/checkpost"
         requests=EHttp.Requests()
 
-        payload=1200 *"remember the milk"
+        chunk_size = 1000
+        size = (10 * 1024) + 9
+
+        data = (size / chunk_size) * [chunk_size * "a"]
+        if size % chunk_size > 0:
+            data.append(size % chunk_size * "a")
 
         requests.headers["Content-Type"] = CONTENT_TYPE
         self.assertEqual( requests.headers["Content-Type"], CONTENT_TYPE)
 
-        requests.post(host,port,selector,len(payload))
+        requests.post(host,port,selector,size)
 
-        requests.add_payload(payload)
+
+        for chunk in data:
+            log.debug("sending chunk")
+            requests.add_payload(chunk)
 
 
 
 
         while requests.status() < EHttp.FINISHED:
+            log.debug("Post reading ..")
             MOD.sleep(10)
             requests.status()
             if requests.response.headers is not None:
@@ -102,11 +112,13 @@ class HttpServiceTest(unittest.TestCase):
             log.debug("Getting out: %s" % data_size)
         log.debug("post res %s" % res)
         size_of_post=int(res)
-        self.assertEqual(size_of_post,len(payload))
+        assert size_of_post == size
 
 
 
-
+def suite():
+    suite1 = unittest.makeSuite(HttpServiceTest, 'test')
+    return unittest.TestSuite((suite1,))
 
 
 

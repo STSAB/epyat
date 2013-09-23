@@ -5,7 +5,7 @@ import EBuffer
 from logger import log
 import EGprs
 
-BUFFSIZE = 1024
+BUFFSIZE = 295
 NEWLINE="\r\n"
 
 class ESocket:
@@ -13,31 +13,32 @@ class ESocket:
         self.connId = connId
         self.host = host
         self.port = port
-        log.debug("Create ESocket:%s:%s,%s" % (self.host, self.port, self.connId))
+        #if socket is open close it and discard ..
         self.close()
 
     def send(self, data):
-        #TODO everything
-        #move out the command logic and handel that in the EInterface instead of here
-        #if socket is closed open it and try to activate
+
+        #if socket is closed open,check if context is active and open it
         if not self.status():
-            if not EGprs.is_active_ctx(self.connId):
-                EGprs.activate_ctx(self.connId)
+            context=EGprs.contexts.getbysocket(self.connId)
+            if not context.active():
+                context.activate()
 
                     #create the socket, dial out using command mode
             res = EInterface.sendCommand('AT#SD=%s,0,%s,"%s",0,0,1' % (self.connId, self.port, self.host), 180)
 
         #send data in 1024 chunk's
-        length = len(data)
+        length = len(data) #TODO read this from the ESettings
 
+        #TODO if would be nice if we could move this command out to the EInterface
 
-        #log.debug(EInterface.sendCommand("AT#SI"))
-        log.debug("Sending %s bytes" % length)
         for step in range((length / BUFFSIZE) + 1):
+            #calculate what to send
             start = step * BUFFSIZE
             stop = (step + 1) * BUFFSIZE
             if stop > length:
                 stop = length
+
             datapart = data[start:stop] + chr(26)
 
             MDM.send("AT#SSEND=%s%s" % (self.connId,NEWLINE),5)
@@ -49,38 +50,24 @@ class ESocket:
                 if ">" in res:
                     MDM.send(datapart,5)
                     res=EBuffer.receive(1)
-                    log.debug("SSEND terminated with" + str(res))
-                    break
-                else:
-                    log.debug("SSEND terminated with" + str(res))
-                    self.close()
-            else:
-                self.close()
-
-
-
-
-
-
-
-
+                    if res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) == -1:
+                        log.error("SEND error: %s" % repr(res))
+                        raise EInterface.CommandError(0)
+                    return 1
+            raise EInterface.TimeoutException
 
     def receive(self):
         #read all up from the buffer, will waste ongoing commands
         res=EBuffer.receive(1)
-        res=EBuffer.getSring(1,BUFFSIZE)
 
-        return res
+        return EBuffer.getSring(1,BUFFSIZE)
 
     def status(self):
-        #TODO examples, add info from AT# AT#SLASTCLOUSURE
-        res = EInterface.sendCommand("AT#SS=%s" % (self.connId))[0].split(",")[1]
-
-        return int(res)
+        return int(EInterface.sendCommand("AT#SS=%s" % self.connId)[0].split(",")[1])
 
     def close(self):
-        res=EInterface.sendCommand("AT#SH=%i" % self.connId,20)
-        log.debug("Socket:close:%s" % res)
+        EInterface.sendCommand("AT#SH=%i" % self.connId,20)
+
 
 
 

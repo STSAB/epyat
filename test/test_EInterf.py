@@ -62,6 +62,6 @@ class  EInterfaceTestCase(unittest.TestCase):
         self.assertRaises(EInterface.TimeoutException, EInterface.sendCommand, command="AT#LSCRIPT", timeout=0)
 
 
-if __name__ == '__main__':
-    unittest.main()
-
+def suite():
+    suite1 = unittest.makeSuite(EInterfaceTestCase, 'test')
+    return unittest.TestSuite((suite1,))

@@ -28,9 +28,14 @@ the exception is documented.
 import MDM
 import MOD
 import EBuffer
+from logger import log
 
 NEWLINE = "\r\n"
 """ Line seperator used by the module. """
+
+SEND_MODE=0
+COMMAND_MODE=1
+
 
 class TimeoutException:
     """
@@ -106,7 +111,11 @@ def sendCommand(command, timeout = 5):
         Thrown, if the module returned "ERROR" or "+CME ERROR:".
     """
 
+    #log.debug(command)
+
+
     # Clear input buffer before reading
+    #do we need this?
     EBuffer.receive(1)
 
     MDM.send(command, 5)

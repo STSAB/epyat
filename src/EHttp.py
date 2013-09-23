@@ -19,8 +19,6 @@ class Headers:
     def __init__(self, str_headers=None):
         self._head="" #this is the header head ex "GET /test HTTP/1.0"
 
-
-
         if str_headers is None:
             self._headers = {'user-agent': 'st-solution',
                             'accept': '*/*',
@@ -53,7 +51,7 @@ class Headers:
         header =self._head
         for key in self._headers.keys():
             header = header + '%s: %s\r\n' % (key, self._headers[key])
-        return header + "\r\n"
+        return self._head + "\r\n" + header + "\r\n"
 
 
 

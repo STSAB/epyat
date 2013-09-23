@@ -143,5 +143,6 @@ class  Test_ENetworkTestCase(unittest.TestCase):
         self.assertEqual(type(res["error"]), int, "Check if key \"error\" is an integer")
 
 
-if __name__ == '__main__':
-    unittest.main()
+def suite():
+    suite1 = unittest.makeSuite(Test_ENetworkTestCase, 'test')
+    return unittest.TestSuite((suite1,))

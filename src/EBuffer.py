@@ -1,5 +1,5 @@
 import MDM
-
+from logger import log
 
 
 #TODO get this from ESettings
@@ -51,11 +51,10 @@ def getSring(cid,maxlen):
     #_buffer[cid-1]=_buffer[cid-1][maxlen:]
     return res
     
-
 def receive(timeoutTenthOfSec):
+
     #check telit
     res=MDM.receive(1)
-
     if res is None:
         return res
 
@@ -68,9 +67,9 @@ def receive(timeoutTenthOfSec):
     return res
 
 def _stripNO_CARRIER(res):
-    if "NO CARRIER" in res:
-        _no_carrier=1
-        res=res.replace("NO CARRIER\r\n", "")
+    # if "NO CARRIER" in res:
+    #     _no_carrier=1
+    #     res=res.replace("NO CARRIER\r\n", "")
     return res
         
 def _get_SRING(res):
@@ -111,7 +110,6 @@ def _get_SRING(res):
         res=res[:start] + res[s4:]
 
 
-    
     return res
 
                         

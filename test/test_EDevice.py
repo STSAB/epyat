@@ -98,35 +98,38 @@ class  Test_EDeviceTestCase(unittest.TestCase):
 
         self.assertEqual(EDevice.getSoftwareRevision(), Test_EDeviceTestCase.SOFTWARE_REVISION, "Check model")
 
+    # @unittest.skip("skipping reboot")
+    # def test_reboot(self):
+    #     """
+    #     Tests the reboot function.
+    #     """
+    #
+    #     EDevice.reboot()
+    #     self.assertRaises(EInterface.TimeoutException, EInterface.sendCommand, command = "AT", timeout = 1)
+    #
+    #     # Wait until the module has rebooted
+    #     time.sleep(5)
+    #
+    #     self.assertEqual(EInterface.sendCommand("AT")[0], "", "Check if module is ready")
 
-    def test_reboot(self):
-        """
-        Tests the reboot function.
-        """
-
-        EDevice.reboot()
-        self.assertRaises(EInterface.TimeoutException, EInterface.sendCommand, command = "AT", timeout = 1)
-
-        # Wait until the module has rebooted
-        time.sleep(5)
-
-        self.assertEqual(EInterface.sendCommand("AT")[0], "", "Check if module is ready")
-
-
-    def test_shutdown(self):
-        """
-        Tests the shutdown function.
-
-        As this sends a shutdown command to the module, all following tests
-        may fail since the module may keep turned off.
-        """
-
-        time.sleep(1)
-        EDevice.shutdown()
-        time.sleep(2)
-        self.assertRaises(TimeoutException, EInterface.sendCommand, command = "AT", timeout = 1)
+    # @unittest.skip("skipping shutdown")
+    # def test_shutdown(self):
+    #     """
+    #     Tests the shutdown function.
+    #
+    #     As this sends a shutdown command to the module, all following tests
+    #     may fail since the module may keep turned off.
+    #     """
+    #
+    #     time.sleep(1)
+    #     EDevice.shutdown()
+    #     time.sleep(2)
+    #     self.assertRaises(TimeoutException, EInterface.sendCommand, command = "AT", timeout = 1)
 
 
-if __name__ == '__main__':
-    unittest.main()
+def suite():
+    suite1 = unittest.makeSuite(Test_EDeviceTestCase, 'test')
+    return unittest.TestSuite((suite1,))
+
+
 

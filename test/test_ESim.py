@@ -176,5 +176,6 @@ class  Test_ESimTestCase(unittest.TestCase):
             print "Tested with SIM removed. Repeat test with SIM inserted."
 
 
-if __name__ == '__main__':
-    unittest.main()
+def suite():
+    suite1 = unittest.makeSuite(Test_ESimTestCase, 'test')
+    return unittest.TestSuite((suite1,))
