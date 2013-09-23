@@ -1,4 +1,3 @@
-import string
 from ESocket import ESocket
 from logger import log
 
