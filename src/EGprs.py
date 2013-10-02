@@ -15,8 +15,7 @@ class Context:
 
     def configure(self, apn=config.apn,pdp_addr="0.0.0.0",d_comp=0,h_comp=0):
         res=sendCommand('AT+CGDCONT=%i, "IP" ,%s, %s, %i, %i' % (self.cid,apn,pdp_addr,d_comp,h_comp),20)
-        if not res == "OK":
-            log.warning("Creating context failed")
+
 
     def configured(self):
         #res is like [''] or ('(1)',) or ('(1,2)',)
@@ -114,10 +113,13 @@ def init():
 
 
     #set default config
-    res=EInterface.sendCommand("AT#SCFG=1,1,1500,90,600,50")
+    res=EInterface.sendCommand("AT#SCFG=1,1,1500,600,600,50")
     res=EInterface.sendCommand("AT#SCFGEXT=1,2,0,10,0,0")
-    res=EInterface.sendCommand("AT#SCFG=2,1,1500,90,600,50")
+    res=EInterface.sendCommand("AT#SCFGEXT2=1,0,0,1")
+
+    res=EInterface.sendCommand("AT#SCFG=2,1,1500,600,600,50")
     res=EInterface.sendCommand("AT#SCFGEXT=2,2,0,10,0,0")
+    res=EInterface.sendCommand("AT#SCFGEXT2=2,0,0,1")
 
 
     contexts[0].configure()

@@ -5,8 +5,22 @@ import EBuffer
 from logger import log
 import EGprs
 
-BUFFSIZE = 295
+
+#read this from ESettings
+BUFFSIZE = 1500
 NEWLINE="\r\n"
+
+
+class SocketException:
+    """
+    The TimoutException is thrown when the timeout is reached while waiting
+    for a "OK", "ERROR" or "+CME ERROR:" response from the module.
+    """
+
+    pass
+
+
+
 
 class ESocket:
     def __init__(self, connId, host, port):
@@ -16,16 +30,24 @@ class ESocket:
         #if socket is open close it and discard ..
         self.close()
 
-    def send(self, data):
+    def send(self, data, open_socket=0):
 
-        #if socket is closed open,check if context is active and open it
-        if not self.status():
+        #TODO error. Code: 559
+
+
+        #if socket is closed open,check if context is active and open itAT
+        if open_socket == 1:
+            log.debug("Socket is closed, open it")
             context=EGprs.contexts.getbysocket(self.connId)
             if not context.active():
                 context.activate()
 
                     #create the socket, dial out using command mode
-            res = EInterface.sendCommand('AT#SD=%s,0,%s,"%s",0,0,1' % (self.connId, self.port, self.host), 180)
+            res = EInterface.sendCommand('AT#SD=%s,0,%s,"%s",255,0,1' % (self.connId, self.port, self.host), 180)
+        elif open_socket == 0 and self.status() == 0:
+            log.debug("Socket has been, closed, try to restart")
+            raise SocketException
+
 
         #send data in 1024 chunk's
         length = len(data) #TODO read this from the ESettings
@@ -49,21 +71,29 @@ class ESocket:
                 res=EBuffer.receive(1)
                 if ">" in res:
                     MDM.send(datapart,5)
-                    res=EBuffer.receive(1)
-                    if res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) == -1:
-                        log.error("SEND error: %s" % repr(res))
-                        raise EInterface.CommandError(0)
-                    return 1
-            raise EInterface.TimeoutException
+                    # res=EBuffer.receive(1)
+                    # if res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) == -1:
+                    #     log.error("SEND error: %s" % repr(res))
+                    #     raise EInterface.CommandError(0)
+                    log.debug("Socket sent %i %s" % (len(datapart)-1,res))
+                    break
+
 
     def receive(self):
         #read all up from the buffer, will waste ongoing commands
+        if self.status() == 0:
+            log.debug("Socket is closed")
+
         res=EBuffer.receive(1)
 
         return EBuffer.getSring(1,BUFFSIZE)
 
     def status(self):
-        return int(EInterface.sendCommand("AT#SS=%s" % self.connId)[0].split(",")[1])
+        try:
+            return int(EInterface.sendCommand("AT#SS=%s" % self.connId)[0].split(",")[1])
+        except:
+            log.debug("Socket status error")
+            return -1
 
     def close(self):
         EInterface.sendCommand("AT#SH=%i" % self.connId,20)

@@ -14,6 +14,7 @@ _no_carrier=0
 #buffer funktions
 
 def _addSRING(cid,data):
+    log.debug("add cid %i, data %i" % (cid,len(data)))
     _buffer[cid-1].append(data)
 
 
@@ -50,14 +51,22 @@ def getSring(cid,maxlen):
 
     #_buffer[cid-1]=_buffer[cid-1][maxlen:]
     return res
+
+def check_Sring(cid):
+    #returns true if we have something in buffer
+    return _buffer !=  []
+
+
     
 def receive(timeoutTenthOfSec):
+
+
 
     #check telit
     res=MDM.receive(1)
     if res is None:
         return res
-
+    #log.debug(res)
     #check for unsoiltced messgage
     #SRING
     res = _get_SRING(res)

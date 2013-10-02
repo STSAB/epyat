@@ -118,6 +118,8 @@ def sendCommand(command, timeout = 5):
     #do we need this?
     EBuffer.receive(1)
 
+    #log.debug(command)
+
     MDM.send(command, 5)
     MDM.send(NEWLINE, 5)
 
