@@ -1,5 +1,7 @@
 # a small python like logger
 import sys
+import MOD
+
 DEBUG=0
 INFO=1
 WARNING=2
@@ -36,7 +38,7 @@ class _Logging:
         
     def _writelog(self,msg,loglevel):
         if loglevel >= self.loglevel:
-            sys.stdout.write(str(msg) + "\r\n")
+            sys.stdout.write('%i %s\r\n' % (MOD.secCounter(), str(msg)))
             #print msg + "\r\n"
             
 
