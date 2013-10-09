@@ -5,9 +5,12 @@ sys.path.append("./include")
 
 
 import unittest
+import logger
+#logger.log.setloglevel(logger.WARNING)
+
 
 if __name__ == '__main__':
-    pattern="test*.py"
+    pattern="test_EH*.py"
     if len(sys.argv) > 1:
         pattern=sys.argv[1]
 
