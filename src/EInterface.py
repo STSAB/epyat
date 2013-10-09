@@ -28,7 +28,6 @@ the exception is documented.
 import MDM
 import MOD
 import EBuffer
-from logger import log
 
 NEWLINE = "\r\n"
 """ Line seperator used by the module. """
