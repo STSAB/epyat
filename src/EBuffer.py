@@ -1,5 +1,4 @@
 import MDM
-from logger import log
 
 
 #TODO get this from ESettings

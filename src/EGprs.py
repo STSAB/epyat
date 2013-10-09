@@ -1,5 +1,5 @@
 #from ENetwork import getNetworkStatus,getSignalQuality
-from EInterface import sendCommand, init
+from EInterface import sendCommand
 from logger import log
 import Config
 
