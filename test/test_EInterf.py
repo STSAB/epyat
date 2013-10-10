@@ -17,8 +17,7 @@ import time
 import EInterface
 
 
-class  EInterfaceTestCase(unittest.TestCase):
-
+class EInterfaceTestCase(unittest.TestCase):
     def setUp(self):
         EInterface.init()
 

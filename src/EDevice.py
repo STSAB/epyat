@@ -27,6 +27,7 @@ the exception is documented.
 
 import EInterface
 
+
 def getImei():
     """
     Gets the International Mobile Equipment Identity (IMEI), the module's serial number.

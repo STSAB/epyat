@@ -13,15 +13,12 @@
 # limitations under the License.
 
 import unittest
-import time
 import EDevice
 import EInterface
 from EInterface import CommandError
-from EInterface import TimeoutException
 
 
-class  Test_EDeviceTestCase(unittest.TestCase):
-
+class Test_EDeviceTestCase(unittest.TestCase):
     MANUFACTURER = "Telit"
     """ Needs to be set according to the modules manufacturer. """
 
@@ -98,33 +95,33 @@ class  Test_EDeviceTestCase(unittest.TestCase):
 
         self.assertEqual(EDevice.getSoftwareRevision(), Test_EDeviceTestCase.SOFTWARE_REVISION, "Check model")
 
-    # @unittest.skip("skipping reboot")
-    # def test_reboot(self):
-    #     """
-    #     Tests the reboot function.
-    #     """
-    #
-    #     EDevice.reboot()
-    #     self.assertRaises(EInterface.TimeoutException, EInterface.sendCommand, command = "AT", timeout = 1)
-    #
-    #     # Wait until the module has rebooted
-    #     time.sleep(5)
-    #
-    #     self.assertEqual(EInterface.sendCommand("AT")[0], "", "Check if module is ready")
+        # @unittest.skip("skipping reboot")
+        # def test_reboot(self):
+        #     """
+        #     Tests the reboot function.
+        #     """
+        #
+        #     EDevice.reboot()
+        #     self.assertRaises(EInterface.TimeoutException, EInterface.sendCommand, command = "AT", timeout = 1)
+        #
+        #     # Wait until the module has rebooted
+        #     time.sleep(5)
+        #
+        #     self.assertEqual(EInterface.sendCommand("AT")[0], "", "Check if module is ready")
 
-    # @unittest.skip("skipping shutdown")
-    # def test_shutdown(self):
-    #     """
-    #     Tests the shutdown function.
-    #
-    #     As this sends a shutdown command to the module, all following tests
-    #     may fail since the module may keep turned off.
-    #     """
-    #
-    #     time.sleep(1)
-    #     EDevice.shutdown()
-    #     time.sleep(2)
-    #     self.assertRaises(TimeoutException, EInterface.sendCommand, command = "AT", timeout = 1)
+        # @unittest.skip("skipping shutdown")
+        # def test_shutdown(self):
+        #     """
+        #     Tests the shutdown function.
+        #
+        #     As this sends a shutdown command to the module, all following tests
+        #     may fail since the module may keep turned off.
+        #     """
+        #
+        #     time.sleep(1)
+        #     EDevice.shutdown()
+        #     time.sleep(2)
+        #     self.assertRaises(TimeoutException, EInterface.sendCommand, command = "AT", timeout = 1)
 
 
 def suite():

@@ -17,8 +17,8 @@ import ENetwork
 import EInterface
 from EInterface import CommandError
 
-class  Test_ENetworkTestCase(unittest.TestCase):
 
+class Test_ENetworkTestCase(unittest.TestCase):
     def setUp(self):
         EInterface.init()
 
@@ -44,7 +44,8 @@ class  Test_ENetworkTestCase(unittest.TestCase):
                 self.assertTrue("status" in op, "Check if key \"status\" exists")
                 self.assertEqual(type(op["status"]), int, "Check if \"status\" is an integer")
                 self.assertEqual(type(op["status"]), int, "Check if key \"status\" is an integer")
-                self.assertTrue(ENetwork.OPERATOR_UNKNOWN <= op["status"] <= ENetwork.OPERATOR_FORBIDDEN, "Check range of \"status\"")
+                self.assertTrue(ENetwork.OPERATOR_UNKNOWN <= op["status"] <= ENetwork.OPERATOR_FORBIDDEN,
+                                "Check range of \"status\"")
                 self.assertTrue("name" in op, "Check if key \"name\" exists")
                 self.assertTrue("code" in op, "Check if key \"code\" exists")
                 self.assertEqual(type(op["code"]), int, "Check if \"code\" is an integer")
@@ -104,14 +105,15 @@ class  Test_ENetworkTestCase(unittest.TestCase):
         self.assertEqual(len(res), 3, "Check number of entries in dictionary")
         self.assertTrue("status" in res, "Check if key \"status\" exists")
         self.assertEqual(type(res["status"]), int, "Check if key \"status\" is an integer")
-        self.assertTrue(ENetwork.NETWORK_NOT_SEARCHING <= res["status"] <= ENetwork.NETWORK_REGISTERED_ROAMING, "Check range of \"status\"")
+        self.assertTrue(ENetwork.NETWORK_NOT_SEARCHING <= res["status"] <= ENetwork.NETWORK_REGISTERED_ROAMING,
+                        "Check range of \"status\"")
         self.assertTrue("area" in res, "Check if key \"area\" exists")
         self.assertTrue("cell" in res, "Check if key \"status\" exists")
 
         if (res["status"] == ENetwork.NETWORK_NOT_SEARCHING or
-          res["status"] == ENetwork.NETWORK_SEARCHING or
-          res["status"] == ENetwork.NETWORK_DENIED or
-          res["status"] == ENetwork.NETWORK_UNKNOWN):
+                    res["status"] == ENetwork.NETWORK_SEARCHING or
+                    res["status"] == ENetwork.NETWORK_DENIED or
+                    res["status"] == ENetwork.NETWORK_UNKNOWN):
             self.assertEqual(res["area"], None, "Check if key \"area\" is set to None")
             self.assertEqual(res["cell"], None, "Check if key \"cell\" is set to None")
             print "Tested with an expired/deactivated or removed SIM (no network registration). Repeat with an active SIM."

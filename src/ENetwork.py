@@ -111,7 +111,7 @@ def getAvailableOperators():
     return tuple(list)
 
 
-def getConnectedOperator(code = 0):
+def getConnectedOperator(code=0):
     """
     Gets the network operator the device is currently connected to.
 

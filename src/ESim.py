@@ -30,7 +30,7 @@ from EInterface import CommandError
 from EInterface import TimeoutException
 
 
-def enterPin(pin, newPin = None):
+def enterPin(pin, newPin=None):
     """
     Sends the SIM's PIN or PUK to the module, if a PIN or PUK has to be entered.
 
@@ -125,7 +125,8 @@ def isReady():
     except CommandError:
         return False
 
-def waitTillReady(timeout = 10):
+
+def waitTillReady(timeout=10):
     """
     Waits till the SIM becomes ready.
 

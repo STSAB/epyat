@@ -32,8 +32,8 @@ import EBuffer
 NEWLINE = "\r\n"
 """ Line seperator used by the module. """
 
-SEND_MODE=0
-COMMAND_MODE=1
+SEND_MODE = 0
+COMMAND_MODE = 1
 
 
 class TimeoutException:
@@ -43,6 +43,7 @@ class TimeoutException:
     """
 
     pass
+
 
 class CommandError:
     """
@@ -81,7 +82,7 @@ def init():
     sendCommand("AT#SELINT=2")
 
 
-def sendCommand(command, timeout = 5):
+def sendCommand(command, timeout=5):
     """
     Sends a command to the module's AT-interface and waits for the response.
 
@@ -127,8 +128,6 @@ def sendCommand(command, timeout = 5):
     while (MOD.secCounter() < timeout):
         #print "loop"
         res = res + EBuffer.receive(1)
-
-
 
         if (res.rfind("%sERROR%s" % (NEWLINE, NEWLINE)) != -1):
             raise CommandError(0)

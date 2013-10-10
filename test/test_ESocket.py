@@ -14,12 +14,8 @@ EInterface.init()
 EGprs.init()
 
 
-
-
 class ESocketTest(unittest.TestCase):
     def setUp(self):
-
-
 
 
         #self.socket=ESocket(1,"www.dn.se",80)
@@ -34,11 +30,12 @@ class ESocketTest(unittest.TestCase):
     def test_ShouldGetPageWithoutProblem(self):
         log.debug("testGETPAGE")
 
-        host="sl.se"
-        port=80
-        selector="/"
+        host = "sl.se"
+        port = 80
+        selector = "/"
 
-        header = "GET %s HTTP/1.1\r\nUser-Agent: testing\r\nHost: %s:%i\r\nAccept: */*\r\nConnection:Keep-Alive\r\n\r\n" % (selector,host,port)
+        header = "GET %s HTTP/1.1\r\nUser-Agent: testing\r\nHost: %s:%i\r\nAccept: */*\r\nConnection:Keep-Alive\r\n\r\n" % (
+        selector, host, port)
 
 
         # size="/"
@@ -52,7 +49,7 @@ class ESocketTest(unittest.TestCase):
 
 
 
-        self.socket.send(header,1)
+        self.socket.send(header, 1)
 
 
         #wait 30 seconds for the reponse
@@ -73,25 +70,24 @@ class ESocketTest(unittest.TestCase):
         # MOD.sleep(30)
 
 
-        size=0
+        size = 0
 
         data = self.socket.receive()
         #data = data + res
 
-        splitter=data.find("\r\n\r\n")
+        splitter = data.find("\r\n\r\n")
         log.debug("split at %i" % splitter)
 
         if data.find("\r\n\r\n") != -1:
             log.debug(data[:splitter])
-            header,content = data.split("\r\n\r\n", 1)
+            header, content = data.split("\r\n\r\n", 1)
             log.debug("header: " + header)
-            size=int(header[header.rfind(":") +1:])
+            size = int(header[header.rfind(":") + 1:])
         else:
-            content=""
-            log.debug("GET data %s"  % repr(data))
-        log.debug("Content: %i , Size: %i" % (len(content) , size))
+            content = ""
+            log.debug("GET data %s" % repr(data))
+        log.debug("Content: %i , Size: %i" % (len(content), size))
         assert len(content) == size
-
 
 
     # #@unittest.skip("skip testGet for now")
@@ -143,7 +139,7 @@ class ESocketTest(unittest.TestCase):
         #     data.append(size % chunk_size * "a")
 
 
-        size=200
+        size = 200
 
         header = "POST /checkpost HTTP/1.1\r\n"
         header = header + "Content-Length: %i\r\n" % size
@@ -152,31 +148,25 @@ class ESocketTest(unittest.TestCase):
         header = header + "Connection: keep-alive\r\n"
         header = header + "Content-Type: text/plain\r\n\r\n"
 
-
-
         log.debug("send header")
-        self.socket.send(header,open_socket=1)
+        self.socket.send(header, open_socket=1)
 
         log.debug("send data")
-        chunk_size=1024
-        data=size/chunk_size *[chunk_size *"a"]
+        chunk_size = 1024
+        data = size / chunk_size * [chunk_size * "a"]
         if size % chunk_size > 0:
             data.append(size % chunk_size * "a")
 
-
         for chunk in data:
             self.socket.send(chunk)
-
 
         res = self.socket.receive()
 
         if res.find("\r\n\r\n") != -1:
             content = res.split("\r\n\r\n", 2)[1]
         else:
-            content=0
+            content = 0
             log.warning("warning %s" % res)
-
-
 
         assert int(content) == size
 

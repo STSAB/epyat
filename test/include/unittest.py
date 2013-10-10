@@ -33,11 +33,13 @@ SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 __author__ = "Steve Purcell (stephen_purcell@yahoo.com)"
 __version__ = "$Revision: 1.2 $"[11:-2]
 
-import time
 import sys
+
+import time
 import traceback
 import string
 import os
+
 
 ##############################################################################
 # Test framework core
@@ -54,6 +56,7 @@ class TestResult:
     contain tuples of (testcase, exceptioninfo), where exceptioninfo is a
     tuple of values as returned by sys.exc_info().
     """
+
     def __init__(self):
         self.failures = []
         self.errors = []
@@ -77,11 +80,12 @@ class TestResult:
 
     def stop(self):
         self.shouldStop = 1
-    
+
     def __repr__(self):
         return "<%s run=%i errors=%i failures=%i>" % \
                (self.__class__, self.testsRun, len(self.errors),
                 len(self.failures))
+
 
 class TestCase:
     """A class whose instances are single test case.
@@ -98,11 +102,12 @@ class TestCase:
     subclass, specify in the constructor arguments the name of the test method
     that the instance is to execute.
     """
+
     def __init__(self, methodName='runTest'):
         try:
-            self._testMethod = getattr(self,methodName)
+            self._testMethod = getattr(self, methodName)
         except AttributeError:
-            raise ValueError,"no such test method: %s" % methodName
+            raise ValueError, "no such test method: %s" % methodName
 
     def setUp(self):
         pass
@@ -129,20 +134,20 @@ class TestCase:
             try:
                 self.setUp()
             except:
-                result.addError(self,self.__exc_info())
+                result.addError(self, self.__exc_info())
                 return
 
             try:
                 self._testMethod()
             except AssertionError, e:
-                result.addFailure(self,self.__exc_info())
+                result.addFailure(self, self.__exc_info())
             except:
-                result.addError(self,self.__exc_info())
+                result.addError(self, self.__exc_info())
 
             try:
                 self.tearDown()
             except:
-                result.addError(self,self.__exc_info())
+                result.addError(self, self.__exc_info())
         finally:
             result.stopTest(self)
 
@@ -153,7 +158,7 @@ class TestCase:
     failUnless = assert_
 
     def failIf(self, expr, msg=None):
-        apply(self.assert_,(not expr,msg))
+        apply(self.assert_, (not expr, msg))
 
     def __exc_info(self):
         """Return a version of sys.exc_info() with the traceback frame
@@ -175,6 +180,7 @@ class TestSuite:
     runner, such as TextTestRunner. It will run the individual test cases
     in the order in which they were added, aggregating the results.
     """
+
     def __init__(self, tests=()):
         self._tests = list(tests)
 
@@ -203,44 +209,49 @@ class TestSuite:
                 break
             test(result)
         return result
-        
+
 ##############################################################################
 # Text UI
 ##############################################################################
 
 class _WritelnDecorator:
     """Used to decorate file-like objects with a handy 'writeln' method"""
-    def __init__(self,stream):
+
+    def __init__(self, stream):
         self.stream = stream
+
     def __getattr__(self, attr):
-        return getattr(self.stream,attr)
+        return getattr(self.stream, attr)
+
     def writeln(self, *args):
         if args: apply(self.write, args)
         self.write(os.linesep)
-        
+
+
 class TextTestResult(TestResult):
     """A test result class that can print formatted text results to a stream.
     """
+
     def __init__(self, stream):
         self.stream = stream
         TestResult.__init__(self)
 
     def addError(self, test, error):
-        TestResult.addError(self,test,error)
+        TestResult.addError(self, test, error)
         self.stream.write('E')
         self.stream.flush()
-        
+
     def addFailure(self, test, error):
-        TestResult.addFailure(self,test,error)
+        TestResult.addFailure(self, test, error)
         self.stream.write('F')
         self.stream.flush()
-        
+
     def startTest(self, test):
-        TestResult.startTest(self,test)
+        TestResult.startTest(self, test)
         self.stream.write('.')
         self.stream.flush()
 
-    def printNumberedErrors(self,errFlavour,errors):
+    def printNumberedErrors(self, errFlavour, errors):
         if not errors: return
         if len(errors) == 1:
             self.stream.writeln("There was 1 %s:" % errFlavour)
@@ -248,17 +259,17 @@ class TextTestResult(TestResult):
             self.stream.writeln("There were %i %ss:" %
                                 (len(errors), errFlavour))
         i = 1
-        for test,error in errors:
-            errString = string.join(apply(traceback.format_exception,error),"")
+        for test, error in errors:
+            errString = string.join(apply(traceback.format_exception, error), "")
             self.stream.writeln("%i) %s" % (i, test))
             self.stream.writeln(errString)
             i = i + 1
-            
+
     def printErrors(self):
-        self.printNumberedErrors('error',self.errors)
+        self.printNumberedErrors('error', self.errors)
 
     def printFailures(self):
-        self.printNumberedErrors('failure',self.failures)
+        self.printNumberedErrors('failure', self.failures)
 
     def printHeader(self):
         self.stream.writeln()
@@ -283,6 +294,7 @@ class TextTestRunner:
 
     Uses TextTestResult.
     """
+
     def __init__(self, stream=sys.stderr):
         self.stream = _WritelnDecorator(stream)
 
@@ -298,40 +310,42 @@ class TextTestRunner:
         result.printResult()
         return result
 
+
 def createTestInstance(name):
     """Looks up and calls a callable object by its string name, which should
        include its module name, e.g. 'widgettests.WidgetTestSuite'.
     """
     if '.' not in name:
-        raise ValueError,"No package given"
-    dotPos = string.rfind(name,'.')
-    last = name[dotPos+1:]
+        raise ValueError, "No package given"
+    dotPos = string.rfind(name, '.')
+    last = name[dotPos + 1:]
     if not len(last):
-        raise ValueError,"Malformed classname"
+        raise ValueError, "Malformed classname"
     pkg = name[:dotPos]
     try:
-        testCreator = getattr(__import__(pkg,globals(),locals(),[last]),last)
+        testCreator = getattr(__import__(pkg, globals(), locals(), [last]), last)
     except AttributeError, e:
         print sys.exc_info()
         raise ImportError, \
-              "No object '%s' found in package '%s'" % (last,pkg)
+            "No object '%s' found in package '%s'" % (last, pkg)
     try:
         test = testCreator()
     except:
         raise TypeError, \
-              "Error making a test instance by calling '%s'" % testCreator
-    if not hasattr(test,"countTestCases"):
+            "Error making a test instance by calling '%s'" % testCreator
+    if not hasattr(test, "countTestCases"):
         raise TypeError, \
-              "Calling '%s' returned '%s', which is not a test case or suite" \
-              % (name,test)
+            "Calling '%s' returned '%s', which is not a test case or suite" \
+            % (name, test)
     return test
+
 
 def makeSuite(testCaseClass, prefix='test'):
     """Returns a TestSuite instance built from all of the test cases
        in the given test case class whose names begin with the given
        prefix
     """
-    testFnNames = filter(lambda n,p=prefix: n[:len(p)] == p, \
+    testFnNames = filter(lambda n, p=prefix: n[:len(p)] == p, \
                          dir(testCaseClass))
     cases = map(testCaseClass, testFnNames)
     return TestSuite(cases)
@@ -342,7 +356,7 @@ def makeSuite(testCaseClass, prefix='test'):
 ##############################################################################
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2 and sys.argv[1] not in ('-help','-h','--help'):
+    if len(sys.argv) == 2 and sys.argv[1] not in ('-help', '-h', '--help'):
         testClass = createTestInstance(sys.argv[1])
         result = TextTestRunner().run(testClass)
         if result.wasSuccessful():

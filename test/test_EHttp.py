@@ -6,15 +6,12 @@ import ESettings
 from logger import log
 
 
-
-
 CONTENT_TYPE = "application/x-stsolutions-protobuf-car"
 
 
 class HttpServiceTest(unittest.TestCase):
     def setUp(self):
         pass
-
 
 
     def tearDown(self):
@@ -25,50 +22,50 @@ class HttpServiceTest(unittest.TestCase):
     def testReceivingConfiguration(self):
         log.debug("testReceivingConfiguration")
 
-        host="krylboc.se"
-        port=80
-        selector="/"
+        host = "krylboc.se"
+        port = 80
+        selector = "/"
 
         #create a session
-        session=EHttp.Session()
+        session = EHttp.Session()
 
         #add your own fancy header
         session.request.headers['remember'] = "i got milk?"
 
 
         #so get the respone
-        response=session.get(host,port,selector)
+        response = session.get(host, port, selector)
 
         #how much have we got, not anything yet
-        read=0
+        read = 0
 
         "so get it"
         while response.update() < EHttp.CLOSED:
             MOD.sleep(20)
             #here just downloaded
 
-            res=response.getContent()
+            res = response.getContent()
             while res != "":
                 #save the size we got and compare it later
-                read=read+len(res)
-                res=response.getContent()
+                read = read + len(res)
+                res = response.getContent()
 
 
-            #send or save the read(parts) and you get a big file
+                #send or save the read(parts) and you get a big file
 
-        res=response.getContent()
+        res = response.getContent()
         while res != "":
             #save the size we got and compare it later
-            read=read+len(res)
-            res=response.getContent()
+            read = read + len(res)
+            res = response.getContent()
 
 
 
         #check the response header
-        content_lenght=response.headers["Content-Length"]
+        content_lenght = response.headers["Content-Length"]
 
         #we got
-        log.debug("read: %i content: %i" % (read,int(content_lenght)))
+        log.debug("read: %i content: %i" % (read, int(content_lenght)))
         assert read == int(content_lenght)
 
 
@@ -76,39 +73,39 @@ class HttpServiceTest(unittest.TestCase):
     def testSendConfiguration(self):
         log.debug("testSendConfiguration")
 
-        CONTENT_TYPE="text/plain"
+        CONTENT_TYPE = "text/plain"
 
-        host="krylboc.se"
-        port=9000
-        selector="/checkpost"
+        host = "krylboc.se"
+        port = 9000
+        selector = "/checkpost"
 
 
         #create a session
 
-        session=EHttp.Session()
+        session = EHttp.Session()
 
         #how much data to sent
-        size_of_data=20000
-        chunk_size=1024
-        data=size_of_data/chunk_size *[chunk_size *"a"]
+        size_of_data = 20000
+        chunk_size = 1024
+        data = size_of_data / chunk_size * [chunk_size * "a"]
         if size_of_data % chunk_size > 0:
             data.append(size_of_data % chunk_size * "a")
 
         #send the post header
-        payload,response=session.post(host,port,selector,size_of_data)
+        payload, response = session.post(host, port, selector, size_of_data)
 
         #and then the payload
         for chunk in data:
             payload.add(chunk)
 
         #here will we add our response from the post
-        content=""
+        content = ""
 
         "so get it"
         while response.update() < EHttp.CLOSED:
             MOD.sleep(20)
             #here just downloaded
-            content=content+response.getContent()
+            content = content + response.getContent()
 
 
             #send or save the read(parts) and you get a big fil
@@ -117,7 +114,6 @@ class HttpServiceTest(unittest.TestCase):
 
         #we got
         assert size_of_data == int(content)
-
 
 
 def suite():

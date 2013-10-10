@@ -20,8 +20,7 @@ from EInterface import CommandError
 from EInterface import TimeoutException
 
 
-class  Test_ESimTestCase(unittest.TestCase):
-
+class Test_ESimTestCase(unittest.TestCase):
     PIN = 4221
     """ The PIN of the SIM that's inserted into the module. """
 
@@ -106,14 +105,14 @@ class  Test_ESimTestCase(unittest.TestCase):
                 ESim.enterPin(1234, Test_ESimTestCase.PIN)
                 self.assertTrue(EInterface.sendCommand("AT+CPIN?")[0].find("READY") != -1, "PIN accepted and changed")
 
-                print "Tested with SIM inserted and PIN required.",\
-                "Repeat test with SIM removed and a SIM inserted that does not require a PIN."
+                print "Tested with SIM inserted and PIN required.", \
+                    "Repeat test with SIM removed and a SIM inserted that does not require a PIN."
 
             # PIN not required
             else:
                 self.assertTrue(EInterface.sendCommand("AT+CPIN?")[0].find("READY") != -1, "No PIN required")
-                print "Tested with SIM inserted and no PIN required.",\
-                "Repeat test with SIM removed and a SIM inserted that does require a PIN."
+                print "Tested with SIM inserted and no PIN required.", \
+                    "Repeat test with SIM removed and a SIM inserted that does require a PIN."
 
         # SIM removed
         else:

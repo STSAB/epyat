@@ -32,10 +32,9 @@ STATUS_READ = "REC READ"
 STATUS_UNSENT = "STO UNSENT"
 STATUS_SENT = "STO SENT"
 
+
 class SmsMessage(object):
-
-
-    def __init__(self, number, text, status = STATUS_UNSENT, arrival = None):
+    def __init__(self, number, text, status=STATUS_UNSENT, arrival=None):
         """
         Creates a new instance that represents a SMS message.
 
@@ -150,7 +149,6 @@ class SmsMessage(object):
 
 
 class SmsStatusReport(object):
-
     def __init__(self, status, reference, arrival, delivery):
         """
         Creates a new instance that represents a SMS status report.
@@ -351,7 +349,7 @@ def readMessage(index):
         return SmsStatusReport(status, reference, arrival, delivery)
 
 
-def readMessages(status = "ALL"):
+def readMessages(status="ALL"):
     """
     Reads all message with a given status from the modules storage.
 
@@ -414,9 +412,11 @@ def sendMessage(message):
         to a network, the destination number is invalid etc.).
     """
 
-    res = EInterface.sendCommand("AT+CMGS=\"%s\",%d\r%s%s" % (message.getNumber(), message.getNumberType(), message.getText(), chr(0x1A)))
+    res = EInterface.sendCommand(
+        "AT+CMGS=\"%s\",%d\r%s%s" % (message.getNumber(), message.getNumberType(), message.getText(), chr(0x1A)))
 
     return int(res[0])
+
 
 def sendStoredMessage(index):
     """
@@ -464,6 +464,7 @@ def storeMessage(message):
     """
 
     # The character 0x1A terminates the input and causes the module to stored the message
-    res = EInterface.sendCommand("AT+CMGW=\"%s\",%d,\"%s\"\r%s%s" % (message.getNumber(), message.getNumberType(), message.getStatus(), message.getText(), chr(0x1A)))
+    res = EInterface.sendCommand("AT+CMGW=\"%s\",%d,\"%s\"\r%s%s" % (
+    message.getNumber(), message.getNumberType(), message.getStatus(), message.getText(), chr(0x1A)))
     message._index = int(res[0])
     return int(res[0])
