@@ -15,8 +15,6 @@ class Headers:
     def __init__(self, str_headers=None):
         self._head="" #this is the header head ex "GET /test HTTP/1.0"
 
-        print "creating header",str_headers
-
         if str_headers is None:
             self._headers = {'user-agent': 'st-solution',
                             'accept': '*/*',
