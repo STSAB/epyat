@@ -8,6 +8,10 @@ SENDING = 1
 RECEIVING = 2
 CLOSED = 3
 
+# HTTP status codes
+SC_OK = 200
+SC_ACCEPTED = 200
+SC_NOT_MODIFIED = 304
 
 class Headers:
     """a case insensitive dict"""
