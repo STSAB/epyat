@@ -13,85 +13,39 @@ SC_OK = 200
 SC_ACCEPTED = 200
 SC_NOT_MODIFIED = 304
 
-class Headers:
-    """a case insensitive dict"""
-
-    def __init__(self, str_headers=None):
-        self._head = "" #this is the header head ex "GET /test HTTP/1.0"
-
-        if str_headers is None:
-            self._headers = {'user-agent': 'st-solution',
-                             'accept': '*/*',
-                             'connection': 'keep-alive'}
-        else:
-            self._headers = {}
-            self._headers_from_string(str_headers)
-
-    def _headers_from_string(self, str_headers):
-        self._rawheader = str_headers
-        for line in str_headers.split("\r\n"):
-            if line.find(":") != -1:
-                key, value = line.split(":", 1)
-                self._headers[key.lower()] = str(value).lower()
-
-    def __setitem__(self, key, value):
-        self._headers[key.lower()] = str(value).lower()
-
-
-    def __delitem__(self, key):
-        del self._headers[key.lower()]
-
-
-    def __getitem__(self, key):
-        if self._headers.has_key(key.lower()):
-            return self._headers[key.lower()]
-
-
-    def __str__(self):
-        header = self._head
-        for key in self._headers.keys():
-            header = header + '%s: %s\r\n' % (key, self._headers[key])
-        return header + "\r\n"
-
 
 class Session:
     def __init__(self):
-        self.request = Request()
-        self.request.headers = Headers()
+        self._socket = None
+        self._response = None
+        pass
 
-    def post(self, host, port, selector, payload_length):
+    def post(self, host, port, selector, payload_length, headers={}):
         #create socket from ..?
         self._socket = ESocket(1, host, port)
-
-        self.request.headers._head = 'GET %s HTTP/1.1\r\n' % quote(selector)
-        self.request.headers['Content-length'] = payload_length
-        self.request.headers['Host'] = "%s:%s" % (host, port)
-
-        payload = Payload(self, payload_length)
-
-        self._socket.send(str(self.request.headers), 1)
-
         self._response = Response(self._socket)
 
-        return payload, self._response
+        # Assemble HTTP headers.
+        headers['Content-length'] = payload_length
+        headers['Host'] = "%s:%s" % (host, port)
 
+        self._socket.send('POST %s HTTP/1.1\r\n' % quote(selector), 1)
+        self._socket.send('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
+        self._socket.send('\r\n\r\n')
+        return Payload(self, payload_length), self._response
 
-    def get(self, host, port, selector):
+    def get(self, host, port, selector, headers={}):
         #create socket from ..?
         socket = ESocket(1, host, port)
-
-        self.request.headers._head = 'GET %s HTTP/1.1\r\n' % quote(selector)
-        self.request.headers['Host'] = "%s:%s" % (host, port)
-
-        socket.send(str(self.request.headers), 1)
-
         self._response = Response(socket)
 
+        # Assemble HTTP headers.
+        headers['Host'] = "%s:%s" % (host, port)
+
+        self._socket.send('GET %s HTTP/1.1\r\n' % quote(selector), 1)
+        self._socket.send('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
+        self._socket.send('\r\n\r\n')
         return self._response
-
-
-class Request:
-    pass
 
 
 class Response:

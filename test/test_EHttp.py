@@ -13,10 +13,8 @@ class HttpServiceTest(unittest.TestCase):
     def setUp(self):
         pass
 
-
     def tearDown(self):
         pass
-
 
     @unittest.skip("skip receiving")
     def testReceivingConfiguration(self):
@@ -30,11 +28,12 @@ class HttpServiceTest(unittest.TestCase):
         session = EHttp.Session()
 
         #add your own fancy header
-        session.request.headers['remember'] = "i got milk?"
+        headers = {
+            'remember': 'i got milk?'
+        }
 
-
-        #so get the respone
-        response = session.get(host, port, selector)
+        #so get the response
+        response = session.get(host, port, selector, headers)
 
         #how much have we got, not anything yet
         read = 0
@@ -50,7 +49,6 @@ class HttpServiceTest(unittest.TestCase):
                 read = read + len(res)
                 res = response.getContent()
 
-
                 #send or save the read(parts) and you get a big file
 
         res = response.getContent()
@@ -59,14 +57,12 @@ class HttpServiceTest(unittest.TestCase):
             read = read + len(res)
             res = response.getContent()
 
-
-
         #check the response header
-        content_lenght = response.headers["Content-Length"]
+        content_length = response.headers['Content-Length']
 
         #we got
-        log.debug("read: %i content: %i" % (read, int(content_lenght)))
-        assert read == int(content_lenght)
+        log.debug("read: %i content: %i" % (read, int(content_length)))
+        assert read == int(content_length)
 
 
     #@unittest.skip("skip sending")
