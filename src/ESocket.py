@@ -10,6 +10,13 @@ import EGprs
 BUFFSIZE = 1500
 NEWLINE = "\r\n"
 
+# Socket status
+SS_CLOSED = 0
+SS_ACTIVE = 1
+SS_SUSPENDED = 2
+SS_SUSPENDED_PENDING_DATA = 3
+SS_LISTENING = 4
+SS_INCOMING_CONNECTION = 5
 
 class SocketException:
     """
@@ -32,7 +39,6 @@ class ESocket:
 
         #TODO error. Code: 559
 
-
         #if socket is closed open,check if context is active and open itAT
         if open_socket == 1:
             log.debug("Socket is closed, open it")
@@ -45,7 +51,6 @@ class ESocket:
         elif open_socket == 0 and self.status() == 0:
             log.debug("Socket has been, closed, try to restart")
             raise SocketException
-
 
         #send data in 1024 chunk's
         length = len(data) #TODO read this from the ESettings
