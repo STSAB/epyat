@@ -6,9 +6,7 @@ import Config
 import EInterface
 
 config = Config.Config()
-
 config.apn = "internet.telenor.se"
-
 
 class Context:
     def __init__(self, cid):
@@ -16,7 +14,6 @@ class Context:
 
     def configure(self, apn=config.apn, pdp_addr="0.0.0.0", d_comp=0, h_comp=0):
         res = sendCommand('AT+CGDCONT=%i, "IP" ,%s, %s, %i, %i' % (self.cid, apn, pdp_addr, d_comp, h_comp), 20)
-
 
     def configured(self):
         #res is like [''] or ('(1)',) or ('(1,2)',)
@@ -84,28 +81,9 @@ class Contexts:
 
 contexts = Contexts()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-#move this out
-#EInterface.init()
-
-
-
 def init():
     contexts[0].reset()
     contexts[1].reset()
-
 
     #set default config
     res = EInterface.sendCommand("AT#SCFG=1,1,1500,600,600,50")
