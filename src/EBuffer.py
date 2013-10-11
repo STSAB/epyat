@@ -57,7 +57,7 @@ def check_Sring(cid):
 def receive(timeoutTenthOfSec):
     #check telit
     res = MDM.receive(1)
-    if res is None:
+    if len(res) == 0:
         return res
         #log.debug(res)
     #check for unsoiltced messgage
