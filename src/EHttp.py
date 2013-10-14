@@ -36,8 +36,8 @@ class Session:
 
     def get(self, host, port, selector, headers={}):
         #create socket from ..?
-        socket = ESocket(1, host, port)
-        self._response = Response(socket)
+        self._socket = ESocket(1, host, port)
+        self._response = Response(self._socket)
 
         # Assemble HTTP headers.
         headers['Host'] = "%s:%s" % (host, port)
@@ -53,32 +53,37 @@ class Response:
         self._socket = socket
         self.headers = None
         self._headers = ""
-
         self.status_code = 0
-
         self.status = RECEIVING
-
         self._content = []
         self._content_length = 0
 
     def _create_header(self, res):
-        log.debug("check if headers")
         if self.headers is not None:
             return res
         self._headers = self._headers + res
         res = ""
         log.debug("search for headers")
-        if self._headers.find("\r\n\r\n") != -1:
-            log.debug("Found header")
-            self._headers, res = self._headers.split("\r\n\r\n", 2)
+        if '\r\n\r\n' not in self._headers:
+            # Headers+content not received yet.
+            return ''
 
-            self.headers = Headers(self._headers)
-            del self._headers
+        log.debug("Found header")
 
-            return res
-        else:
-            return ""
+        # Split the data into headers+content
+        self._headers, res = self._headers.split("\r\n\r\n", 2)
 
+        # Parse header section to convert each header to a dictionary entry.
+        headers = {}
+        for row in self._headers.split('\r\n'):
+            if ': ' not in row:
+                continue
+            key, value = row.split(': ')
+            headers[key] = value
+
+        self.headers = headers
+        del self._headers
+        return res
 
     def update(self):
         log.debug("update")
@@ -96,8 +101,7 @@ class Response:
             #check if we get all content
         log.debug("update check header")
         if self.headers is not None:
-            cl = self.headers["Content-Length"]
-            if cl is not None and cl <= self._content_length:
+            if 'Content-Length' in self.headers and self.headers['Content-Length'] <= self._content_length:
                 self.status = 4
                 self._socket.close()
         log.debug("leaving update")
