@@ -90,7 +90,6 @@ class Response:
             res = self._socket.receive()
             if res == "" and self._socket.status() == 0:
                 self.status = CLOSED
-            log.debug(res)
             res = self._create_header(res)
             self._content.append(res)
             self._content_length = self._content_length + len(res)
