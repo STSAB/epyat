@@ -43,19 +43,19 @@ class HttpServiceTest(unittest.TestCase):
             MOD.sleep(20)
             #here just downloaded
 
-            res = response.getContent()
+            res = response.get_content()
             while res != "":
                 #save the size we got and compare it later
                 read = read + len(res)
-                res = response.getContent()
+                res = response.get_content()
 
                 #send or save the read(parts) and you get a big file
 
-        res = response.getContent()
+        res = response.get_content()
         while res != "":
             #save the size we got and compare it later
             read = read + len(res)
-            res = response.getContent()
+            res = response.get_content()
 
         #check the response header
         content_length = response.headers['Content-Length']
@@ -101,7 +101,7 @@ class HttpServiceTest(unittest.TestCase):
         while response.update() < EHttp.CLOSED:
             MOD.sleep(20)
             #here just downloaded
-            content = content + response.getContent()
+            content = content + response.get_content()
 
 
             #send or save the read(parts) and you get a big fil

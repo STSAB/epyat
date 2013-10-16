@@ -73,9 +73,18 @@ class Response:
         # Split the data into headers+content
         self._headers, res = self._headers.split("\r\n\r\n", 2)
 
+        # Parse response
+        try:
+            version, self.status_code, self._headers = self._headers.split(' ', 2)
+            self.status_code = int(self.status_code)
+        except ValueError, e:
+            log.error("Error reading status: %s" % e)
+            return ''
+
         # Parse header section to convert each header to a dictionary entry.
         headers = {}
         for row in self._headers.split('\r\n'):
+            # Skip header rows we cannot split into key/value pairs.
             if ': ' not in row:
                 continue
             key, value = row.split(': ')
@@ -93,7 +102,7 @@ class Response:
         if self.status < CLOSED:
             #check if the buffer is empty instead
             res = self._socket.receive()
-            if res == "" and self._socket.status() == 0:
+            if res == "" and self._socket.status() == ESocket.SS_CLOSED:
                 self.status = CLOSED
             res = self._create_header(res)
             self._content.append(res)
@@ -101,14 +110,14 @@ class Response:
             #check if we get all content
         log.debug("update check header")
         if self.headers is not None:
-            if 'Content-Length' in self.headers and self.headers['Content-Length'] <= self._content_length:
-                self.status = 4
+            if 'Content-Length' in self.headers and int(self.headers['Content-Length']) <= self._content_length:
+                self.status = CLOSED
                 self._socket.close()
         log.debug("leaving update")
 
         return self.status
 
-    def getContent(self, size=1024):
+    def get_content(self, size=1024):
         log.debug("getContent")
         #same as in Ebuffer, maybe make something better handling o it
         res = ""
