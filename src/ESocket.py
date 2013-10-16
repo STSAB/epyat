@@ -23,9 +23,33 @@ class SocketException:
     The TimoutException is thrown when the timeout is reached while waiting
     for a "OK", "ERROR" or "+CME ERROR:" response from the module.
     """
+    def __init__(self, message):
+        self.message = str
 
-    pass
+    def __repr__(self):
+        return '<SocketException message:%s>' % (self.message)
 
+class ConnectError(SocketException):
+    """
+    Raised on connect failures.
+    """
+    def __init__(self, host, port):
+        SocketException.__init__(self, "Error connecting to %s:%s" (host, port))
+
+class TimeoutException(SocketException):
+    """
+    Exception raised when reading- or writing data times out.
+    """
+    def __init__(self):
+        SocketException.__init__(self, "Timeout while reading/writing data")
+
+class IOError(SocketException):
+    """
+    Fatal socket I/O. This is thrown when the underlying system signals an unusable socket state, for example trying
+    to write to a closed socket.
+    """
+    def __init__(self, message):
+        SocketException.__init__(self, message)
 
 class ESocket:
     def __init__(self, connId, host, port):
@@ -50,7 +74,7 @@ class ESocket:
             res = EInterface.sendCommand('AT#SD=%s,0,%s,"%s",255,0,1' % (self.connId, self.port, self.host), 180)
         elif open_socket == 0 and self.status() == 0:
             log.debug("Socket has been, closed, try to restart")
-            raise SocketException
+            raise IOError("Socket has been closed")
 
         #send data in 1024 chunk's
         length = len(data) #TODO read this from the ESettings
