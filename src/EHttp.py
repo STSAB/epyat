@@ -171,6 +171,9 @@ class Payload:
         self.content_length = content_length
         self.sent = 0
 
+    def remaining(self):
+        return self.content_length - self.sent
+
     def add(self, data):
         self.parent._socket.send(data)
         self.sent = self.sent + len(data)
