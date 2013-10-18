@@ -1,4 +1,4 @@
-from ESocket import ESocket
+import ESocket
 from logger import log
 
 
@@ -14,38 +14,71 @@ SC_ACCEPTED = 200
 SC_NOT_MODIFIED = 304
 
 
+class EHttpError:
+    """
+    Base EHttp error.
+    """
+    def __init__(self, message):
+        """
+        Initialize error.
+        @param message: Descriptive error message.
+        """
+        self.message = message
+
+class ConnectionError(EHttpError):
+    """
+    Error raised on connection failure. This includes DNS resolution failures, connection refusal and unavailable hosts.
+    """
+    def __init__(self, host, port):
+        """
+        Initialize error.
+
+        @param host: Host used in connection attempt.
+        @param port: Port used in connection attempt.
+        """
+        EHttpError.__init__(self, "Connection error")
+        self.host = host
+        self.port = port
+
 class Session:
     def __init__(self):
         self._socket = None
         self._response = None
-        pass
 
     def post(self, host, port, selector, payload_length, headers={}):
-        #create socket from ..?
-        self._socket = ESocket(1, host, port)
-        self._response = Response(self._socket)
+        try:
+            self._socket = ESocket.ESocket(1, host, port)
+            self._response = Response(self._socket)
 
-        # Assemble HTTP headers.
-        headers['Content-length'] = payload_length
-        headers['Host'] = "%s:%s" % (host, port)
+            # Assemble HTTP headers.
+            headers['Content-length'] = payload_length
+            headers['Host'] = "%s:%s" % (host, port)
 
-        self._socket.send('POST %s HTTP/1.1\r\n' % quote(selector), 1)
-        self._socket.send('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
-        self._socket.send('\r\n\r\n')
-        return Payload(self, payload_length), self._response
+            self._socket.send('POST %s HTTP/1.1\r\n' % quote(selector), 1)
+            self._socket.send('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
+            self._socket.send('\r\n\r\n')
+            return Payload(self, payload_length), self._response
+        except ESocket.ConnectError, e:
+            raise ConnectionError(host, port)
+        except ESocket.SocketException, e:
+            raise EHttpException("Unknown error")
 
     def get(self, host, port, selector, headers={}):
-        #create socket from ..?
-        self._socket = ESocket(1, host, port)
-        self._response = Response(self._socket)
+        try:
+            self._socket = ESocket.ESocket(1, host, port)
+            self._response = Response(self._socket)
 
-        # Assemble HTTP headers.
-        headers['Host'] = "%s:%s" % (host, port)
+            # Assemble HTTP headers.
+            headers['Host'] = "%s:%s" % (host, port)
 
-        self._socket.send('GET %s HTTP/1.1\r\n' % quote(selector), 1)
-        self._socket.send('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
-        self._socket.send('\r\n\r\n')
-        return self._response
+            self._socket.send('GET %s HTTP/1.1\r\n' % quote(selector), 1)
+            self._socket.send('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
+            self._socket.send('\r\n\r\n')
+            return self._response
+        except ESocket.ConnectError, e:
+            raise ConnectionError(host, port)
+        except ESocket.SocketException, e:
+            raise EHttpException("Unknown error")
 
 
 class Response:
@@ -63,12 +96,9 @@ class Response:
             return res
         self._headers = self._headers + res
         res = ""
-        log.debug("search for headers")
         if '\r\n\r\n' not in self._headers:
             # Headers+content not received yet.
             return ''
-
-        log.debug("Found header")
 
         # Split the data into headers+content
         self._headers, res = self._headers.split("\r\n\r\n", 2)
@@ -118,7 +148,6 @@ class Response:
         return self.status
 
     def get_content(self, size=1024):
-        log.debug("getContent")
         #same as in Ebuffer, maybe make something better handling o it
         res = ""
         for i in range(len(self._content)):
