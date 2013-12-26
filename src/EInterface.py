@@ -26,8 +26,9 @@ the exception is documented.
 """
 
 import MDM
-import MOD
 import EBuffer
+import time
+import sys
 
 NEWLINE = "\r\n"
 """ Line seperator used by the module. """
@@ -83,6 +84,7 @@ def init():
 
 
 def sendCommand(command, timeout=5):
+    sys.stdout.write(command + '\n')
     """
     Sends a command to the module's AT-interface and waits for the response.
 
@@ -123,9 +125,9 @@ def sendCommand(command, timeout=5):
     MDM.send(command, 5)
     MDM.send(NEWLINE, 5)
 
-    timeout = MOD.secCounter() + timeout
+    timeout = time.time() + timeout
     res = ""
-    while (MOD.secCounter() < timeout):
+    while (time.time() < timeout):
         #print "loop"
         res = res + EBuffer.receive(1)
 

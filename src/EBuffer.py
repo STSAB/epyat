@@ -1,4 +1,5 @@
 import MDM
+import time
 
 
 #TODO get this from ESettings
@@ -56,7 +57,11 @@ def check_Sring(cid):
 
 def receive(timeoutTenthOfSec):
     #check telit
-    res = MDM.receive(1)
+    res = ''
+    deadline = time.time() + timeoutTenthOfSec / 10.0
+    while time.time() < deadline:
+        res += MDM.read()
+
     if len(res) == 0:
         return res
         #log.debug(res)

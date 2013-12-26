@@ -1,6 +1,6 @@
 # a small python like logger
 import sys
-import MOD
+import time
 
 DEBUG = 0
 INFO = 1
@@ -40,13 +40,10 @@ class _Logging:
 
     def _writelog(self, msg, loglevel):
         if loglevel >= self.loglevel:
-            sys.stdout.write('%i %s\r\n' % (MOD.secCounter(), str(msg)))
-            #print msg + "\r\n"
-
+            sys.stdout.write('%f %s\r\n' % (time.time(), str(msg)))
 
 log = _Logging()
-log.debug("LOG DEBUG")
-        
+
     
     
 

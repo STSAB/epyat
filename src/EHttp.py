@@ -1,6 +1,5 @@
-import ESocket
 from logger import log
-
+import _socket as socket
 
 CHUNK_SIZE = 1024
 
@@ -40,45 +39,70 @@ class ConnectionError(EHttpError):
         self.host = host
         self.port = port
 
+class TimeoutError(EHttpError):
+    def __init__(self, message):
+        EHttpError.__init__(self, message)
+
 class Session:
     def __init__(self):
         self._socket = None
         self._response = None
 
-    def post(self, host, port, selector, payload_length, headers={}):
+    def _create_socket(self):
+        # Create socket.
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         try:
-            self._socket = ESocket.ESocket(1, host, port)
-            self._response = Response(self._socket)
+            # Bind socket to context ID. This uses a non-standard socket option which will fail when executed
+            # outside of the Telit environment.
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_CONTEXTID, 1)
+        except AttributeError, e:
+            log.error('Session: Error binding socket to context. This only applies to Telit platforms')
+            pass
+
+        return sock
+
+    def post(self, host, port, selector, payload_length, headers=None):
+        if not headers: headers = {}
+        try:
+            sock = self._create_socket()
+            sock.connect((host, port))
+            self._response = Response(sock)
 
             # Assemble HTTP headers.
             headers['Content-length'] = payload_length
             headers['Host'] = "%s:%s" % (host, port)
 
-            self._socket.send('POST %s HTTP/1.1\r\n' % quote(selector), 1)
-            self._socket.send('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
-            self._socket.send('\r\n\r\n')
-            return Payload(self, payload_length), self._response
-        except ESocket.ConnectError, e:
+            sock.sendall('POST %s HTTP/1.1\r\n' % quote(selector))
+            sock.sendall('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
+            sock.sendall('\r\n\r\n')
+            return Payload(self, sock, payload_length), self._response
+        except socket.gaierror, e:
             raise ConnectionError(host, port)
-        except ESocket.SocketException, e:
-            raise EHttpException("Unknown error")
+        except socket.timeout, e:
+            raise TimeoutError(e.message)
+        except socket.error, e:
+            raise EHttpError("Unknown error: " + e.message)
 
-    def get(self, host, port, selector, headers={}):
+    def get(self, host, port, selector, headers=None):
+        if not headers: headers = {}
         try:
-            self._socket = ESocket.ESocket(1, host, port)
+            sock = self._create_socket()
+            sock.connect(( host, port))
             self._response = Response(self._socket)
 
             # Assemble HTTP headers.
             headers['Host'] = "%s:%s" % (host, port)
 
-            self._socket.send('GET %s HTTP/1.1\r\n' % quote(selector), 1)
-            self._socket.send('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
-            self._socket.send('\r\n\r\n')
-            return self._response
-        except ESocket.ConnectError, e:
+            sock.sendall('GET %s HTTP/1.1\r\n' % quote(selector))
+            sock.sendall('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
+            sock.sendall('\r\n\r\n')
+        except socket.gaierror, e:
             raise ConnectionError(host, port)
-        except ESocket.SocketException, e:
-            raise EHttpException("Unknown error")
+        except socket.timeout, e:
+            raise TimeoutError(e.message)
+        except socket.error, e:
+            raise EHttpError("Unknown error: " + e.message)
 
 
 class Response:
@@ -131,9 +155,10 @@ class Response:
 
         if self.status < CLOSED:
             #check if the buffer is empty instead
-            res = self._socket.receive()
-            if res == "" and self._socket.status() == ESocket.SS_CLOSED:
+            res = self._socket.recv(1024)
+            if len(res) == 0:
                 self.status = CLOSED
+
             res = self._create_header(res)
             self._content.append(res)
             self._content_length = self._content_length + len(res)
@@ -144,8 +169,16 @@ class Response:
                 self.status = CLOSED
                 self._socket.close()
         log.debug("leaving update")
-
         return self.status
+
+    def content_length(self):
+        """
+        Returns the length of the response's content if available. This checks the 'Content-Length' header, so in
+        order for this call to work a successful call to update() must preceed it.
+
+        @return: Length of payload in HTTP request if any.
+        """
+        return int(self.headers.get('Content-Length', 0))
 
     def get_content(self, size=1024):
         #same as in Ebuffer, maybe make something better handling o it
@@ -166,8 +199,9 @@ class Response:
 
 
 class Payload:
-    def __init__(self, parent, content_length):
+    def __init__(self, parent, socket, content_length):
         self.parent = parent
+        self.socket = socket
         self.content_length = content_length
         self.sent = 0
 
@@ -175,7 +209,7 @@ class Payload:
         return self.content_length - self.sent
 
     def add(self, data):
-        self.parent._socket.send(data)
+        self.socket.sendall(data)
         self.sent = self.sent + len(data)
         if self.sent >= self.content_length:
             self.parent.status = RECEIVING

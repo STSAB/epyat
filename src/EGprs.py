@@ -13,7 +13,7 @@ class Context:
         self.cid = cid
 
     def configure(self, apn=config.apn, pdp_addr="0.0.0.0", d_comp=0, h_comp=0):
-        res = sendCommand('AT+CGDCONT=%i, "IP" ,%s, %s, %i, %i' % (self.cid, apn, pdp_addr, d_comp, h_comp), 20)
+        res = sendCommand('AT+CGDCONT=%i,"IP",%s,%s,%i,%i' % (self.cid, apn, pdp_addr, d_comp, h_comp), 20)
 
     def configured(self):
         #res is like [''] or ('(1)',) or ('(1,2)',)
@@ -59,7 +59,7 @@ class Context:
 class Contexts:
     def __init__(self):
         self._contexts = []
-        for i in range(5):
+        for i in range(2):
             self._contexts.append(Context(i + 1))
 
     def __getitem__(self, index):
@@ -82,20 +82,16 @@ class Contexts:
 contexts = Contexts()
 
 def init():
-    contexts[0].reset()
-    contexts[1].reset()
+    # Add an ACCEPT rule for all addresses. It's not clear if this is a bug in the firmware or not, but it is
+    # required in order to connect with the _socket module from Python 2.7. It does not seem to be required when
+    # doing socket communication using AT commands.
+    EInterface.sendCommand('AT#FRWL=1,"192.168.1.1","0.0.0.0"')
 
-    #set default config
-    res = EInterface.sendCommand("AT#SCFG=1,1,1500,600,600,50")
-    res = EInterface.sendCommand("AT#SCFGEXT=1,2,0,10,0,0")
-    res = EInterface.sendCommand("AT#SCFGEXT2=1,0,0,1")
-
-    res = EInterface.sendCommand("AT#SCFG=2,1,1500,600,600,50")
-    res = EInterface.sendCommand("AT#SCFGEXT=2,2,0,10,0,0")
-    res = EInterface.sendCommand("AT#SCFGEXT2=2,0,0,1")
-
-    contexts[0].configure()
-    contexts[1].configure()
+    # Initialize and activate contexts.
+    for context in contexts:
+        context.reset()
+        context.configure()
+        context.activate()
 
 
 
