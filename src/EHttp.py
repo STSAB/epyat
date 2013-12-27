@@ -9,7 +9,7 @@ CLOSED = 3
 
 # HTTP status codes
 SC_OK = 200
-SC_ACCEPTED = 200
+SC_ACCEPTED = 202
 SC_NOT_MODIFIED = 304
 
 
@@ -17,6 +17,7 @@ class EHttpError:
     """
     Base EHttp error.
     """
+
     def __init__(self, message):
         """
         Initialize error.
@@ -24,10 +25,12 @@ class EHttpError:
         """
         self.message = message
 
+
 class ConnectionError(EHttpError):
     """
     Error raised on connection failure. This includes DNS resolution failures, connection refusal and unavailable hosts.
     """
+
     def __init__(self, host, port):
         """
         Initialize error.
@@ -39,9 +42,11 @@ class ConnectionError(EHttpError):
         self.host = host
         self.port = port
 
+
 class TimeoutError(EHttpError):
     def __init__(self, message):
         EHttpError.__init__(self, message)
+
 
 class Session:
     def __init__(self):
@@ -85,10 +90,12 @@ class Session:
             raise EHttpError("Unknown error: " + e.message)
 
     def get(self, host, port, selector, headers=None):
-        if not headers: headers = {}
+        if not headers:
+            headers = {}
+
         try:
             sock = self._create_socket()
-            sock.connect(( host, port))
+            sock.connect((host, port))
             self._response = Response(self._socket)
 
             # Assemble HTTP headers.
@@ -119,7 +126,6 @@ class Response:
         if self.headers is not None:
             return res
         self._headers = self._headers + res
-        res = ""
         if '\r\n\r\n' not in self._headers:
             # Headers+content not received yet.
             return ''
@@ -161,13 +167,15 @@ class Response:
 
             res = self._create_header(res)
             self._content.append(res)
-            self._content_length = self._content_length + len(res)
+            self._content_length += len(res)
             #check if we get all content
         log.debug("update check header")
-        if self.headers is not None:
-            if 'Content-Length' in self.headers and int(self.headers['Content-Length']) <= self._content_length:
-                self.status = CLOSED
-                self._socket.close()
+
+        # Consider the transmission complete if the we have received as much data as Content-Length specifies.
+        if self.headers and 'Content-Length' in self.headers and self._content_length >= int(
+                self.headers['Content-Length']):
+            self.status = CLOSED
+            self._socket.close()
         log.debug("leaving update")
         return self.status
 
@@ -178,9 +186,11 @@ class Response:
 
         @return: Length of payload in HTTP request if any.
         """
+        if not self.headers:
+            return 0
         return int(self.headers.get('Content-Length', 0))
 
-    def get_content(self, size=1024):
+    def get_content(self, size=CHUNK_SIZE):
         #same as in Ebuffer, maybe make something better handling o it
         res = ""
         for i in range(len(self._content)):
@@ -210,7 +220,7 @@ class Payload:
 
     def add(self, data):
         self.socket.sendall(data)
-        self.sent = self.sent + len(data)
+        self.sent += len(data)
         if self.sent >= self.content_length:
             self.parent.status = RECEIVING
 
