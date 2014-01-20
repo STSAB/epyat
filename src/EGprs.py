@@ -1,18 +1,15 @@
 #from ENetwork import getNetworkStatus,getSignalQuality
 from EInterface import sendCommand
 from logger import log
-import Config
 
 import EInterface
 
-config = Config.Config()
-config.apn = "internet.telenor.se"
 
 class Context:
     def __init__(self, cid):
         self.cid = cid
 
-    def configure(self, apn=config.apn, pdp_addr="0.0.0.0", d_comp=0, h_comp=0):
+    def configure(self, apn, pdp_addr="0.0.0.0", d_comp=0, h_comp=0):
         res = sendCommand('AT+CGDCONT=%i,"IP",%s,%s,%i,%i' % (self.cid, apn, pdp_addr, d_comp, h_comp), 20)
 
     def configured(self):
@@ -80,6 +77,7 @@ class Contexts:
 
 
 contexts = Contexts()
+
 
 def init():
     # Add an ACCEPT rule for all addresses. It's not clear if this is a bug in the firmware or not, but it is
