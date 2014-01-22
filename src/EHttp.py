@@ -77,7 +77,7 @@ class Session:
             headers['Content-length'] = payload_length
             headers['Host'] = "%s:%s" % (host, port)
 
-            sock.sendall('POST %s HTTP/1.1\r\n' % quote(selector))
+            sock.sendall('POST %s HTTP/1.1\r\n' % _get_request(selector, parameters))
             sock.sendall('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
             sock.sendall('\r\n\r\n')
             return Payload(self, sock, payload_length), self._response
@@ -88,7 +88,7 @@ class Session:
         except socket.error, e:
             raise EHttpError("Unknown error: " + e.message)
 
-    def get(self, host, port, selector, headers=None):
+    def get(self, host, port, selector, headers=None, parameters=None):
         if not headers:
             headers = {}
 
@@ -100,8 +100,8 @@ class Session:
             # Assemble HTTP headers.
             headers['Host'] = "%s:%s" % (host, port)
 
-            sock.sendall('GET %s HTTP/1.1\r\n' % quote(selector))
-            sock.sendall('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
+            sock.sendall('GET %s HTTP/1.1\r\n' % _get_request(selector, parameters))
+            sock.sendall('\r\n'.join('%s: %s' % (k, v) for (k, v) in headers.iteritems()))
             sock.sendall('\r\n\r\n')
             return self._response
         except socket.gaierror, e:
@@ -110,6 +110,25 @@ class Session:
             raise TimeoutError(e.message)
         except socket.error, e:
             raise EHttpError("Unknown error: " + e.message)
+
+def _get_request(selector, parameters):
+    """
+    Concatenate a resource based on a selector and its parameters. Both the selector and the parameters are escaped
+    to comply with URL requirements.
+
+    _get_request('/user_info', {'firstname': 'John', 'lastname': 'Doe'})
+    returns the following request string: /user_info?firstname=John&lastname=Doe.
+
+    This function only supports strings.
+
+    @param selector: Root selector to use for request.
+    @param parameters: Dictionary of string:string pairs which will be embedded into the request.
+    @return: selector and parameters merged into a URL compatible request.
+    """
+    request = quote(selector)
+    if parameters:
+        request = '%s?%s' % (request, '&'.join('%s=%s' % (quote(k), quote(v)) for (k, v) in parameters.iteritems()))
+    return request
 
 
 class Response:
@@ -225,7 +244,7 @@ class Payload:
             self.parent.status = RECEIVING
 
 
-#from python 1.5.2 urllib.py (without permission)
+#from python 1.5.2 urllib.py (without permission).
 letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 digits = '0123456789'
 always_safe = letters + digits + '_,.-'
