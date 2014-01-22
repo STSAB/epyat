@@ -104,6 +104,7 @@ class Session:
             sock.sendall('GET %s HTTP/1.1\r\n' % quote(selector))
             sock.sendall('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
             sock.sendall('\r\n\r\n')
+            return self._response
         except socket.gaierror, e:
             raise ConnectionError(host, port)
         except socket.timeout, e:
