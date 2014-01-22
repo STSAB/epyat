@@ -50,7 +50,6 @@ class TimeoutError(EHttpError):
 
 class Session:
     def __init__(self):
-        self._socket = None
         self._response = None
 
     def _create_socket(self):
@@ -96,7 +95,7 @@ class Session:
         try:
             sock = self._create_socket()
             sock.connect((host, port))
-            self._response = Response(self._socket)
+            self._response = Response(sock)
 
             # Assemble HTTP headers.
             headers['Host'] = "%s:%s" % (host, port)
@@ -114,8 +113,8 @@ class Session:
 
 
 class Response:
-    def __init__(self, socket):
-        self._socket = socket
+    def __init__(self, sock):
+        self._socket = sock
         self.headers = None
         self._headers = ""
         self.status_code = 0
