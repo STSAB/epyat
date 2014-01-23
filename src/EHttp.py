@@ -8,9 +8,11 @@ RECEIVING = 2
 CLOSED = 3
 
 # HTTP status codes
-SC_OK = 200
-SC_ACCEPTED = 202
+SC_OK           = 200
+SC_ACCEPTED     = 202
 SC_NOT_MODIFIED = 304
+SC_FORBIDDEN    = 403
+SC_NOT_FOUND    = 404
 
 
 class EHttpError:
