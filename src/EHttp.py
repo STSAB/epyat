@@ -15,17 +15,11 @@ SC_FORBIDDEN    = 403
 SC_NOT_FOUND    = 404
 
 
-class EHttpError:
+class EHttpError(Exception):
     """
     Base EHttp error.
     """
-
-    def __init__(self, message):
-        """
-        Initialize error.
-        @param message: Descriptive error message.
-        """
-        self.message = message
+    pass
 
 
 class ConnectionError(EHttpError):
