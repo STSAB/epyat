@@ -30,6 +30,20 @@ from EInterface import CommandError
 from EInterface import TimeoutException
 
 
+def getCcid():
+    """
+    Gets the Integrated Circuit Card Identification (CCID) of the SIM card.
+
+    Command: AT#CCID
+
+    @return:
+        The SIM card's CCID if available
+    @rtype:
+        string
+    """
+
+    return EInterface.sendCommand("AT#CCID")[0]
+
 def enterPin(pin, newPin=None):
     """
     Sends the SIM's PIN or PUK to the module, if a PIN or PUK has to be entered.
