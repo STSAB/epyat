@@ -82,8 +82,7 @@ def init():
     sendCommand("AT#SELINT=2")
 
 
-def sendCommand(command, timeout=5):
-    sys.stdout.write(command + '\n')
+def sendCommand(command, timeout=5, debug=False):
     """
     Sends a command to the module's AT-interface and waits for the response.
 
@@ -96,6 +95,8 @@ def sendCommand(command, timeout=5):
         string
     @param timeout:
         Maximum time the function will try to read from the module.
+    @param debug:
+        Print the command to stdout before sending it.
     @type timeout:
         int
 
@@ -112,8 +113,8 @@ def sendCommand(command, timeout=5):
         Thrown, if the module returned "ERROR" or "+CME ERROR:".
     """
 
-    #log.debug(command)
-
+    if debug:
+        print command
 
     # Clear input buffer before reading
     #do we need this?
