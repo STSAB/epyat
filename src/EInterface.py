@@ -37,22 +37,25 @@ SEND_MODE = 0
 COMMAND_MODE = 1
 
 
-class TimeoutException:
+class EInterfaceError(Exception):
+    pass
+
+
+class TimeoutException(EInterfaceError):
     """
     The TimoutException is thrown when the timeout is reached while waiting
     for a "OK", "ERROR" or "+CME ERROR:" response from the module.
     """
-
     pass
 
 
-class CommandError:
+class CommandError(EInterfaceError):
     """
     The CommandError is thrown when the module returned no "OK" message for
     a specific AT-command.
     """
-
     def __init__(self, errorCode):
+        EInterfaceError.__init__("Module responsed an error. Code: %d" % self.__errorCode)
         self.__errorCode = errorCode
 
     def getErrorCode(self):
@@ -64,11 +67,7 @@ class CommandError:
         @return:
             The error code or "0", if the command returned "ERROR" only
         """
-
         return self.__errorCode
-
-    def __str__(self):
-        return "Module responsed an error. Code: %d" % self.__errorCode
 
 
 def init():
