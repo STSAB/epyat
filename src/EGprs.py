@@ -79,7 +79,7 @@ class Contexts:
 contexts = Contexts()
 
 
-def init():
+def init(apn):
     # Add an ACCEPT rule for all addresses. It's not clear if this is a bug in the firmware or not, but it is
     # required in order to connect with the _socket module from Python 2.7. It does not seem to be required when
     # doing socket communication using AT commands.
@@ -87,8 +87,11 @@ def init():
 
     # Initialize and activate contexts.
     for context in contexts:
+        log.debug('EGprs: Resetting context %i' % context.cid)
         context.reset()
-        context.configure()
+        log.debug('EGprs: Configuring context %i' % context.cid)
+        context.configure(apn)
+        log.debug('EGprs: Activating context %i' % context.cid)
         context.activate()
 
 
