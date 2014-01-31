@@ -48,25 +48,10 @@ class Session:
     def __init__(self):
         self._response = None
 
-    def _create_socket(self):
-        # Create socket.
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        try:
-            # Bind socket to context ID. This uses a non-standard socket option which will fail when executed
-            # outside of the Telit environment.
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_CONTEXTID, 1)
-        except AttributeError, e:
-            log.error('Session: Error binding socket to context. This only applies to Telit platforms')
-            pass
-
-        return sock
-
     def post(self, host, port, selector, payload_length, headers=None):
         if not headers: headers = {}
         try:
-            sock = self._create_socket()
-            sock.connect((host, port))
+            sock = _create_connection(host, port)
             self._response = Response(sock)
 
             # Assemble HTTP headers.
@@ -89,8 +74,7 @@ class Session:
             headers = {}
 
         try:
-            sock = self._create_socket()
-            sock.connect((host, port))
+            sock = _create_connection(host, port)
             self._response = Response(sock)
 
             # Assemble HTTP headers.
@@ -99,13 +83,15 @@ class Session:
             sock.sendall('GET %s HTTP/1.1\r\n' % _get_request(selector, parameters))
             sock.sendall('\r\n'.join('%s: %s' % (k, v) for (k, v) in headers.iteritems()))
             sock.sendall('\r\n\r\n')
-            return self._response
         except socket.gaierror, e:
             raise ConnectionError(host, port)
         except socket.timeout, e:
             raise TimeoutError(e.message)
         except socket.error, e:
-            raise EHttpError("Unknown error: " + e.message)
+            raise EHttpError("Unknown error: " + e.strerror)
+
+        return self._response
+
 
 def _get_request(selector, parameters):
     """
@@ -257,9 +243,28 @@ def quote(s, safe='/'):
     return "".join(res)
 
 
+def _create_connection(host, port):
+    # Resolve socket parameters.
+    af, socktype, proto, canonname, sa = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)[0]
 
+    # Create socket.
+    log.debug("Creating socket")
+    sock = socket.socket(af, socktype, proto)
 
+    try:
+        # Bind socket to context ID. This uses a non-standard socket option which will fail when executed
+        # outside of the Telit environment.
+        log.debug("Setting socket options")
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_CONTEXTID, 1)
+    except AttributeError, e:
+        log.error('Session: Error binding socket to context. This only applies to Telit platforms')
 
+    # Disable TCP delay
+    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    # Connect
+    sock.connect((host, port))
+
+    return sock
 
 
 
