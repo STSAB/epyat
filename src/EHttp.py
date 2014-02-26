@@ -156,7 +156,6 @@ class Response:
         return res
 
     def update(self):
-        log.debug("update")
         if self.status == SENDING:
             return SENDING
 
@@ -170,14 +169,12 @@ class Response:
             self._content.append(res)
             self._content_length += len(res)
             #check if we get all content
-        log.debug("update check header")
 
         # Consider the transmission complete if the we have received as much data as Content-Length specifies.
         if self.headers and 'Content-Length' in self.headers and self._content_length >= int(
                 self.headers['Content-Length']):
             self.status = CLOSED
             self._socket.close()
-        log.debug("leaving update")
         return self.status
 
     def content_length(self):
