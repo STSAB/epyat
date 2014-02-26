@@ -33,9 +33,6 @@ import sys
 NEWLINE = "\r\n"
 """ Line seperator used by the module. """
 
-SEND_MODE = 0
-COMMAND_MODE = 1
-
 
 class EInterfaceError(Exception):
     pass
@@ -55,7 +52,7 @@ class CommandError(EInterfaceError):
     a specific AT-command.
     """
     def __init__(self, errorCode):
-        EInterfaceError.__init__("Module responsed an error. Code: %d" % self.__errorCode)
+        EInterfaceError.__init__(self, "Module responded with an error. Code: %d" % errorCode)
         self.__errorCode = errorCode
 
     def getErrorCode(self):
