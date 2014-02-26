@@ -1,7 +1,6 @@
 # a small python like logger
 import sys
 import time
-import os
 
 DEBUG = 0
 INFO = 1
@@ -59,8 +58,8 @@ class _Logging:
             # way as Traceback does in its extract_stack function.
             f = sys._getframe().f_back.f_back
             co = f.f_code
-            filename = '%s:%i' % (os.path.basename(co.co_filename), f.f_lineno)
-            sys.stdout.write('{0} {1} {2} {3}{4}\r\n'.format(col_start, time.time(), filename, str(msg), col_end))
+            filename = '{}:{}'.format(co.co_filename[co.co_filename.rfind('/') + 1:], f.f_lineno)
+            sys.stdout.write('{0}{1} {2} {3}{4}\r\n'.format(col_start, time.time(), filename, str(msg), col_end))
 
 log = _Logging()
     
