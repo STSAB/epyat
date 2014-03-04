@@ -59,7 +59,7 @@ class _Logging:
             f = sys._getframe().f_back.f_back
             co = f.f_code
             filename = '{}:{}'.format(co.co_filename[co.co_filename.rfind('/') + 1:], f.f_lineno)
-            sys.stdout.write('{0}{1} {2} {3}{4}\r\n'.format(col_start, time.time(), filename, str(msg), col_end))
+            sys.stdout.write('{0}{1} {2} {3}{4}\r\n'.format(col_start, time.clock(), filename, str(msg), col_end))
 
 log = _Logging()
     

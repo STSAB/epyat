@@ -122,22 +122,22 @@ def sendCommand(command, timeout=5, debug=False):
     MDM.send(command, 5)
     MDM.send(NEWLINE, 5)
 
-    timeout = time.time() + timeout
+    timeout = time.clock() + timeout
     res = ""
-    while (time.time() < timeout):
+    while time.clock() < timeout:
         #print "loop"
         res = res + EBuffer.receive(1)
 
-        if (res.rfind("%sERROR%s" % (NEWLINE, NEWLINE)) != -1):
+        if res.rfind("%sERROR%s" % (NEWLINE, NEWLINE)) != -1:
             raise CommandError(0)
 
-        if (res.rfind("%s+CME ERROR:" % NEWLINE) != -1):
+        if res.rfind("%s+CME ERROR:" % NEWLINE) != -1:
             start = res.rfind("%s+CME ERROR:" % NEWLINE) + 14
             code = res[start:].strip()
             raise CommandError(int(code))
 
-        # Read until a string is read that indicates the respone's end
-        if (res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) != -1):
+        # Read until a string is read that indicates the response end
+        if res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) != -1:
             end = res.rfind("%sOK%s" % (NEWLINE, NEWLINE))
             return __responseToTuple(res[:end].strip(), command);
             #return res[:end].strip().split(NEWLINE)
@@ -157,13 +157,13 @@ def __responseToTuple(res, command):
         tuple
     """
 
-    list = []
+    chunks = []
     for line in res.split(NEWLINE):
         end = line.find(":")
         # AT-command is repeated in the response line and is equivalent to the command
-        if (end != -1 and command.find(line[:end]) != -1):
-            list.append(line[end + 2:])
+        if end != -1 and command.find(line[:end]) != -1:
+            chunks.append(line[end + 2:])
         else:
             return res.split(NEWLINE)
 
-    return tuple(list)
+    return tuple(chunks)

@@ -48,7 +48,7 @@ class Session:
     def __init__(self):
         self._response = None
 
-    def post(self, host, port, selector, payload_length, headers=None):
+    def post(self, host, port, selector, payload_length, headers=None, parameters=None):
         if not headers: headers = {}
         try:
             sock = _create_connection(host, port)

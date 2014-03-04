@@ -58,14 +58,14 @@ def check_Sring(cid):
 def receive(timeoutTenthOfSec):
     #check telit
     res = ''
-    deadline = time.time() + timeoutTenthOfSec / 10.0
-    while time.time() < deadline:
+    deadline = time.clock() + timeoutTenthOfSec / 10.0
+    while time.clock() < deadline:
         res += MDM.read()
 
     if len(res) == 0:
         return res
         #log.debug(res)
-    #check for unsoiltced messgage
+    #check for unsolicited message
     #SRING
     res = _get_SRING(res)
     #NO CARRIER
@@ -82,7 +82,7 @@ def _stripNO_CARRIER(res):
 
 
 def _get_SRING(res):
-    #we want to find cid (1), lengt of data (102) and get out the data
+    #we want to find cid (1), length of data (102) and get out the data
     #SRING: 1,102, lorem ipsum ...\r\n
     #print repr(res[:30])
 
