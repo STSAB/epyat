@@ -1,6 +1,6 @@
 import EInterface
 from logger import log
-
+import time
 
 class Context:
     def __init__(self, cid):
@@ -88,9 +88,21 @@ def init(apn):
         log.debug('Activating context %i' % context.cid)
         try:
             EInterface.sendCommand('AT+CGDCONT={},"IP","{}"'.format(context.cid, apn))
-            log.debug('Context {} IP: {}'.format(context.cid, context.ip()))
         except EInterface.CommandError, e:
-            raise
+            pass
 
     # Enable GPRS
-    EInterface.sendCommand('AT#GPRS=1')
+    for attempt in range(0, 3):
+        try:
+            EInterface.sendCommand('AT#GPRS=1')
+            break
+        except EInterface.CommandError, e:
+            if e.getErrorCode() == 149: # Not authorized
+                log.error('Error activating GPRS. Trying again')
+                time.sleep(5)
+                continue
+            break
+        except EInterface.TimeoutException:
+            log.error("Timeout, trying again")
+            time.sleep(5)
+            continue
