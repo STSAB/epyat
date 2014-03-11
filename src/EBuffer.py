@@ -1,17 +1,13 @@
 import MDM
-import time
-
+import ETimer
 
 #TODO get this from ESettings
 NEWLINE = "\r\n"
-
 
 #create the buffer fpr srings
 _buffer = 6 * [[]]
 
 _no_carrier = 0
-
-#buffer funktions
 
 def _addSRING(cid, data):
     log.debug("add cid %i, data %i" % (cid, len(data)))
@@ -46,20 +42,13 @@ def getSring(cid, maxlen):
         if item[i] == "":
             del item[i]
 
-    #_buffer[cid-1]=_buffer[cid-1][maxlen:]
     return res
 
 
-def check_Sring(cid):
-    #returns true if we have something in buffer
-    return _buffer != []
-
-
 def receive(timeoutTenthOfSec):
-    #check telit
     res = ''
-    deadline = time.clock() + timeoutTenthOfSec / 10.0
-    while time.clock() < deadline:
+    deadline = ETimer.time() + timeoutTenthOfSec / 10.0
+    while ETimer.time() < deadline:
         res += MDM.read()
 
     if len(res) == 0:

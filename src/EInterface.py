@@ -27,8 +27,7 @@ the exception is documented.
 
 import MDM
 import EBuffer
-import time
-import sys
+import ETimer
 
 NEWLINE = "\r\n"
 """ Line seperator used by the module. """
@@ -122,9 +121,9 @@ def sendCommand(command, timeout=5, debug=False):
     MDM.send(command, 5)
     MDM.send(NEWLINE, 5)
 
-    timeout = time.clock() + timeout
+    timeout = ETimer.time() + timeout
     res = ""
-    while time.clock() < timeout:
+    while ETimer.time() < timeout:
         #print "loop"
         res = res + EBuffer.receive(1)
 
