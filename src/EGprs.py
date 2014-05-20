@@ -85,24 +85,28 @@ def init(apn):
 
     # Activate contexts
     for context in contexts:
-        log.debug('Activating context %i' % context.cid)
-        try:
-            EInterface.sendCommand('AT+CGDCONT={},"IP","{}"'.format(context.cid, apn))
-        except EInterface.CommandError, e:
-            pass
+        while True:
+            log.debug('Activating context %i' % context.cid)
+            try:
+                EInterface.sendCommand('AT+CGDCONT={},"IP","{}"'.format(context.cid, apn))
+                break
+            except EInterface.TimeoutException:
+                log.error("Timeout, trying again")
+                time.sleep(3)
+            except EInterface.CommandError, e:
+                pass
 
     # Enable GPRS
-    for attempt in range(0, 3):
+    while True:
         try:
             EInterface.sendCommand('AT#GPRS=1')
             break
         except EInterface.CommandError, e:
             if e.getErrorCode() == 149: # Not authorized
                 log.error('Error activating GPRS. Trying again')
-                time.sleep(5)
+                time.sleep(3)
                 continue
             break
         except EInterface.TimeoutException:
             log.error("Timeout, trying again")
-            time.sleep(5)
-            continue
+            time.sleep(3)
