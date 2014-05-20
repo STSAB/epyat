@@ -1,4 +1,3 @@
-import MOD
 import MDM
 from logger import log
 #log.setloglevel(2)
@@ -49,11 +48,3 @@ log.debug("#                                                                    
 log.debug("#          STOP TEST                                                                   #")
 log.debug("#                                                                                       #")
 log.debug("#########################################################################################")
-
-#sys.stdout.write( "go telit\n")
-#while 1:
-
-#
-#    log.debug( "hello telit\n")
-#    MOD.sleep(100)
-

@@ -1,5 +1,4 @@
 import unittest
-import MOD
 import EHttp
 import ESocket
 import ESettings
@@ -9,7 +8,7 @@ from logger import log
 CONTENT_TYPE = "application/x-stsolutions-protobuf-car"
 
 
-class HttpServiceTest(unittest.TestCase):
+class EHttpTest(unittest.TestCase):
     def setUp(self):
         pass
 
@@ -40,9 +39,6 @@ class HttpServiceTest(unittest.TestCase):
 
         "so get it"
         while response.update() < EHttp.CLOSED:
-            MOD.sleep(20)
-            #here just downloaded
-
             res = response.get_content()
             while res != "":
                 #save the size we got and compare it later
@@ -75,9 +71,7 @@ class HttpServiceTest(unittest.TestCase):
         port = 9000
         selector = "/checkpost"
 
-
         #create a session
-
         session = EHttp.Session()
 
         #how much data to sent
@@ -103,17 +97,15 @@ class HttpServiceTest(unittest.TestCase):
             #here just downloaded
             content = content + response.get_content()
 
-
-            #send or save the read(parts) and you get a big fil
-
-
-
-        #we got
         assert size_of_data == int(content)
 
+    def testResponseContentLengthShouldCheckContentLengthHttpField(self):
+        response = EHttp.Response(None)
+        response._headers['Content-Length'] = '1234990'
+        assert response.content_length() == 1234990
 
 def suite():
-    suite1 = unittest.makeSuite(HttpServiceTest, 'test')
+    suite1 = unittest.makeSuite(EHttpTest, 'test')
     return unittest.TestSuite((suite1,))
 
 
