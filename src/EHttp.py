@@ -8,11 +8,11 @@ RECEIVING = 2
 CLOSED = 3
 
 # HTTP status codes
-SC_OK           = 200
-SC_ACCEPTED     = 202
+SC_OK = 200
+SC_ACCEPTED = 202
 SC_NOT_MODIFIED = 304
-SC_FORBIDDEN    = 403
-SC_NOT_FOUND    = 404
+SC_FORBIDDEN = 403
+SC_NOT_FOUND = 404
 
 
 class EHttpError(Exception):
@@ -27,14 +27,14 @@ class ConnectionError(EHttpError):
     Error raised on connection failure. This includes DNS resolution failures, connection refusal and unavailable hosts.
     """
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, message):
         """
         Initialize error.
 
         @param host: Host used in connection attempt.
         @param port: Port used in connection attempt.
         """
-        EHttpError.__init__(self, "Connection error")
+        EHttpError.__init__(self, 'Connection error, ' + message)
         self.host = host
         self.port = port
 
@@ -48,10 +48,12 @@ class Session:
     def __init__(self):
         self._response = None
 
-    def post(self, host, port, selector, payload_length, headers=None, parameters=None):
-        if not headers: headers = {}
+    def post(self, host, port, selector, payload_length, headers=None, parameters=None, timeout=None):
+        if not headers:
+            headers = {}
+
         try:
-            sock = _create_connection(host, port)
+            sock = _connect(host, port, timeout=timeout)
             self._response = Response(sock)
 
             # Assemble HTTP headers.
@@ -67,14 +69,14 @@ class Session:
         except socket.timeout, e:
             raise TimeoutError(e.message)
         except socket.error, e:
-            raise EHttpError("Unknown error: " + e.message)
+            raise EHttpError("Unknown error: %s" % e)
 
-    def get(self, host, port, selector, headers=None, parameters=None):
+    def get(self, host, port, selector, headers=None, parameters=None, timeout=None):
         if not headers:
             headers = {}
 
         try:
-            sock = _create_connection(host, port)
+            sock = _connect(host, port, timeout=timeout)
             self._response = Response(sock)
 
             # Assemble HTTP headers.
@@ -83,12 +85,14 @@ class Session:
             sock.sendall('GET %s HTTP/1.1\r\n' % _get_request(selector, parameters))
             sock.sendall('\r\n'.join('%s: %s' % (k, v) for (k, v) in headers.iteritems()))
             sock.sendall('\r\n\r\n')
+            # Request complete. No further writing will be done.
+            #sock.shutdown(socket.SHUT_WR)
         except socket.gaierror, e:
-            raise ConnectionError(host, port)
+            raise ConnectionError(host, port, e.strerror)
         except socket.timeout, e:
             raise TimeoutError(e.message)
         except socket.error, e:
-            raise EHttpError("Unknown error: " + e.strerror)
+            raise EHttpError(e)
 
         return self._response
 
@@ -108,6 +112,7 @@ def _get_request(selector, parameters):
     @return: selector and parameters merged into a URL compatible request.
     """
     request = quote(selector)
+
     if parameters:
         request = '%s?%s' % (request, '&'.join('%s=%s' % (quote(k), quote(v)) for (k, v) in parameters.iteritems()))
     return request
@@ -174,6 +179,10 @@ class Response:
         if self.headers and 'Content-Length' in self.headers and self._content_length >= int(
                 self.headers['Content-Length']):
             self.status = CLOSED
+            # No further reading to be done.
+            #self._socket.shutdown(socket.SHUT_RD)
+            #self._socket.settimeout(None)
+            log.debug('Closing socket')
             self._socket.close()
         return self.status
 
@@ -207,9 +216,9 @@ class Response:
 
 
 class Payload:
-    def __init__(self, parent, socket, content_length):
+    def __init__(self, parent, sock, content_length):
         self.parent = parent
-        self.socket = socket
+        self.socket = sock
         self.content_length = content_length
         self.sent = 0
 
@@ -223,24 +232,18 @@ class Payload:
             self.parent.status = RECEIVING
 
 
-#from python 1.5.2 urllib.py (without permission).
-letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-digits = '0123456789'
-always_safe = letters + digits + '_,.-'
-
-
 def quote(s, safe='/'):
-    safe = always_safe + safe
+    safe = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_,.-' + safe
     res = []
     for c in s:
         if c in safe:
             res.append(c)
         else:
             res.append('%%%02x' % ord(c))
-    return "".join(res)
+    return ''.join(res)
 
 
-def _create_connection(host, port):
+def _connect(host, port, timeout=None):
     # Resolve socket parameters.
     af, socktype, proto, canonname, sa = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)[0]
 
@@ -253,24 +256,18 @@ def _create_connection(host, port):
         # outside of the Telit environment.
         log.debug("Setting socket options")
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_CONTEXTID, 1)
-    except AttributeError, e:
-        log.error('Session: Error binding socket to context. This only applies to Telit platforms')
+    except AttributeError:
+        # Error binding socket to context. This only applies to Telit platforms and should not happen.
+        import sys
+        if 'Telit' in sys.platform:
+            raise
 
+    # Set timeout if specified
+    #if timeout:
+    #    sock.settimeout(timeout)
     # Disable TCP delay
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     # Connect
     sock.connect((host, port))
 
     return sock
-
-
-
-
-
-
-
-
-
-
-
-
