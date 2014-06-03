@@ -1,7 +1,7 @@
 from logger import log
 import _socket as socket
 
-CHUNK_SIZE = 1024
+CHUNK_SIZE = 2048
 
 SENDING = 1
 RECEIVING = 2
