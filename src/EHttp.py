@@ -19,7 +19,6 @@ class EHttpError(Exception):
     """
     Base EHttp error.
     """
-    pass
 
 
 class ConnectionError(EHttpError):
@@ -40,8 +39,20 @@ class ConnectionError(EHttpError):
 
 
 class TimeoutError(EHttpError):
+    """
+    Operation timeout.
+    """
     def __init__(self, message):
         EHttpError.__init__(self, message)
+
+
+class ResponseError(EHttpError):
+    """
+    HTTP response error.
+    """
+    def __init__(self, message, response=None):
+        EHttpError.__init__(self, message)
+        self.response = response
 
 
 class Session:
@@ -213,6 +224,19 @@ class Response:
                 del self._content[i]
 
         return res
+
+    def raise_for_status(self):
+        """
+        Raise an exception if stored status code contains an error.
+        """
+        msg = ''
+        if 400 <= self.status_code < 500:
+            msg = 'Server error'
+        elif 500 <= self.status_code < 600:
+            msg = 'Client error'
+
+        if msg:
+            raise ResponseError('{} {}'.format(self.status_code, msg))
 
 
 class Payload:
