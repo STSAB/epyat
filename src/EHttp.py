@@ -42,6 +42,7 @@ class TimeoutError(EHttpError):
     """
     Operation timeout.
     """
+
     def __init__(self, message):
         EHttpError.__init__(self, message)
 
@@ -50,6 +51,7 @@ class ResponseError(EHttpError):
     """
     HTTP response error.
     """
+
     def __init__(self, message, response=None):
         EHttpError.__init__(self, message)
         self.response = response
@@ -97,7 +99,7 @@ class Session:
             sock.sendall('\r\n'.join('%s: %s' % (k, v) for (k, v) in headers.iteritems()))
             sock.sendall('\r\n\r\n')
             # Request complete. No further writing will be done.
-            #sock.shutdown(socket.SHUT_WR)
+            # sock.shutdown(socket.SHUT_WR)
         except socket.gaierror, e:
             raise ConnectionError(host, port, e.strerror)
         except socket.timeout, e:
@@ -176,7 +178,7 @@ class Response:
             return SENDING
 
         if self.status < CLOSED:
-            #check if the buffer is empty instead
+            # check if the buffer is empty instead
             res = self._socket.recv(1024)
             if len(res) == 0:
                 self.status = CLOSED
@@ -184,15 +186,18 @@ class Response:
             res = self._create_header(res)
             self._content.append(res)
             self._content_length += len(res)
-            #check if we get all content
+            # check if we get all content
 
         # Consider the transmission complete if the we have received as much data as Content-Length specifies.
-        if self.headers and 'Content-Length' in self.headers and self._content_length >= int(
-                self.headers['Content-Length']):
+        if (self.status != CLOSED
+            and self.headers
+            and 'Content-Length' in self.headers
+            and self._content_length >= int(self.headers['Content-Length'])
+        ):
             self.status = CLOSED
             # No further reading to be done.
-            #self._socket.shutdown(socket.SHUT_RD)
-            #self._socket.settimeout(None)
+            # self._socket.shutdown(socket.SHUT_RD)
+            # self._socket.settimeout(None)
             log.debug('Closing socket')
             self._socket.close()
         return self.status
@@ -209,7 +214,7 @@ class Response:
         return int(self.headers.get('Content-Length', 0))
 
     def get_content(self, size=CHUNK_SIZE):
-        #same as in Ebuffer, maybe make something better handling o it
+        # same as in Ebuffer, maybe make something better handling o it
         res = ""
         for i in range(len(self._content)):
             add = size - len(res)
@@ -218,7 +223,7 @@ class Response:
             res = res + self._content[i][:add]
             self._content[i] = self._content[i][add:]
 
-        #clear this up
+        # clear this up
         for i in range(len(self._content) - 1, -1, -1):
             if self._content[i] == "":
                 del self._content[i]
@@ -283,12 +288,13 @@ def _connect(host, port, timeout=None):
     except AttributeError:
         # Error binding socket to context. This only applies to Telit platforms and should not happen.
         import sys
+
         if 'Telit' in sys.platform:
             raise
 
     # Set timeout if specified
-    #if timeout:
-    #    sock.settimeout(timeout)
+    # if timeout:
+    # sock.settimeout(timeout)
     # Disable TCP delay
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     # Connect
