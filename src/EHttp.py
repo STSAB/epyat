@@ -141,6 +141,9 @@ class Response:
         self._content = []
         self._content_length = 0
 
+    def __repr__(self):
+        return '<Response [%s]>' % (self.status_code)
+
     def _create_header(self, res):
         if self.headers is not None:
             return res
