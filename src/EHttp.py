@@ -78,7 +78,7 @@ class Session:
             sock.sendall('\r\n\r\n')
             return Payload(self, sock, payload_length), self._response
         except socket.gaierror, e:
-            raise ConnectionError(host, port)
+            raise ConnectionError(host, port, e.strerror)
         except socket.timeout, e:
             raise TimeoutError(e.message)
         except socket.error, e:
