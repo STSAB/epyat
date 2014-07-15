@@ -25,36 +25,21 @@ class ConnectionError(EHttpError):
     """
     Error raised on connection failure. This includes DNS resolution failures, connection refusal and unavailable hosts.
     """
-
-    def __init__(self, host, port, message):
-        """
-        Initialize error.
-
-        @param host: Host used in connection attempt.
-        @param port: Port used in connection attempt.
-        """
-        EHttpError.__init__(self, 'Connection error, ' + message)
-        self.host = host
-        self.port = port
+    pass
 
 
 class TimeoutError(EHttpError):
     """
     Operation timeout.
     """
-
-    def __init__(self, message):
-        EHttpError.__init__(self, message)
+    pass
 
 
 class ResponseError(EHttpError):
     """
     HTTP response error.
     """
-
-    def __init__(self, message, response=None):
-        EHttpError.__init__(self, message)
-        self.response = response
+    pass
 
 
 class Session:
@@ -78,11 +63,11 @@ class Session:
             sock.sendall('\r\n\r\n')
             return Payload(self, sock, payload_length), self._response
         except socket.gaierror, e:
-            raise ConnectionError(host, port, e.strerror)
+            raise ConnectionError(e.strerror)
         except socket.timeout, e:
             raise TimeoutError(e.message)
         except socket.error, e:
-            raise EHttpError("Unknown error: %s" % e)
+            raise EHttpError(e)
 
     def get(self, host, port, selector, headers=None, parameters=None, timeout=None):
         if not headers:
@@ -101,7 +86,7 @@ class Session:
             # Request complete. No further writing will be done.
             # sock.shutdown(socket.SHUT_WR)
         except socket.gaierror, e:
-            raise ConnectionError(host, port, e.strerror)
+            raise ConnectionError(e.strerror)
         except socket.timeout, e:
             raise TimeoutError(e.message)
         except socket.error, e:
