@@ -40,7 +40,8 @@ class ResponseError(EHttpError):
     """
     HTTP response error.
     """
-    pass
+    def __init__(self, code, message):
+        self.status_code, self.message = code, message
 
 
 class Session:
@@ -230,7 +231,7 @@ class Response:
             msg = 'Client error'
 
         if msg:
-            raise ResponseError('{} {}'.format(self.status_code, msg))
+            raise ResponseError(self.status_code, '{} {}'.format(self.status_code, msg))
 
 
 class Payload:
