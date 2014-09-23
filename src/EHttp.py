@@ -226,9 +226,9 @@ class Response:
         """
         msg = ''
         if 400 <= self.status_code < 500:
-            msg = 'Server error'
-        elif 500 <= self.status_code < 600:
             msg = 'Client error'
+        elif 500 <= self.status_code < 600:
+            msg = 'Server error'
 
         if msg:
             raise ResponseError(self.status_code, '{} {}'.format(self.status_code, msg))
