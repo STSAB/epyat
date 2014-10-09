@@ -53,7 +53,7 @@ class Context:
 class Contexts:
     def __init__(self):
         self._contexts = []
-        for i in range(2):
+        for i in range(1):
             self._contexts.append(Context(i + 1))
 
     def __getitem__(self, index):
@@ -97,8 +97,10 @@ def init(apn):
                 pass
 
     # Enable GPRS
-    while True:
+    attempts = 0
+    while attempts < 5:
         try:
+            attempts += 1
             EInterface.sendCommand('AT#GPRS=1')
             break
         except EInterface.CommandError, e:
