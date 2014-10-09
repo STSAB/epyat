@@ -16,7 +16,6 @@ SC_FORBIDDEN = 403
 SC_NOT_FOUND = 404
 SC_INTERNAL_SERVER_ERROR = 500
 
-
 class EHttpError(Exception):
     """
     Base EHttp error.
@@ -45,6 +44,20 @@ class ResponseError(EHttpError):
         self.status_code, self.message = code, message
 
 
+class ClientError(ResponseError):
+    """
+    HTTP response 400-499.
+    """
+    pass
+
+
+class ServerError(ResponseError):
+    """
+    HTTP response 500-599.
+    """
+    pass
+
+
 class Session:
     def __init__(self):
         self._response = None
@@ -55,12 +68,12 @@ class Session:
 
         try:
             sock = _connect(host, port, timeout=timeout)
+            log.debug('Connected')
             self._response = Response(sock)
 
             # Assemble HTTP headers.
             headers['Content-length'] = payload_length
             headers['Host'] = "%s:%s" % (host, port)
-
             sock.sendall('POST %s HTTP/1.1\r\n' % _get_request(selector, parameters))
             sock.sendall('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
             sock.sendall('\r\n\r\n')
@@ -78,11 +91,11 @@ class Session:
 
         try:
             sock = _connect(host, port, timeout=timeout)
+            log.debug('Connected')
             self._response = Response(sock)
 
             # Assemble HTTP headers.
             headers['Host'] = "%s:%s" % (host, port)
-
             sock.sendall('GET %s HTTP/1.1\r\n' % _get_request(selector, parameters))
             sock.sendall('\r\n'.join('%s: %s' % (k, v) for (k, v) in headers.iteritems()))
             sock.sendall('\r\n\r\n')
@@ -225,14 +238,10 @@ class Response:
         """
         Raise an exception if stored status code contains an error.
         """
-        msg = ''
         if 400 <= self.status_code < 500:
-            msg = 'Client error'
+            raise ClientError(self.status_code, '{} Client error'.format(self.status_code))
         elif 500 <= self.status_code < 600:
-            msg = 'Server error'
-
-        if msg:
-            raise ResponseError(self.status_code, '{} {}'.format(self.status_code, msg))
+            raise ServerError(self.status_code, '{} Server error'.format(self.status_code))
 
 
 class Payload:
@@ -268,7 +277,6 @@ def _connect(host, port, timeout=None):
     af, socktype, proto, canonname, sa = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)[0]
 
     # Create socket.
-    log.debug("Creating socket")
     sock = socket.socket(af, socktype, proto)
 
     try:
@@ -287,8 +295,9 @@ def _connect(host, port, timeout=None):
     # if timeout:
     # sock.settimeout(timeout)
     # Disable TCP delay
+    log.debug('Setting nodelay')
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     # Connect
+    log.debug('Connecting')
     sock.connect((host, port))
-
     return sock
