@@ -5,6 +5,7 @@ import time
 class Context:
     def __init__(self, cid):
         self.cid = cid
+        self.apn = ''
 
     def configure(self, apn, pdp_addr="0.0.0.0", d_comp=0, h_comp=0):
         res = EInterface.sendCommand('AT+CGDCONT=%i,"IP",%s,%s,%i,%i' % (self.cid, apn, pdp_addr, d_comp, h_comp), 20)
@@ -49,31 +50,17 @@ class Context:
                 sockets.append(int(row[0]))
         return sockets
 
-
-class Contexts:
-    def __init__(self):
-        self._contexts = []
-        for i in range(1):
-            self._contexts.append(Context(i + 1))
-
-    def __getitem__(self, index):
-        return self._contexts[index]
-
-    def items(self):
-        return self._contexts
-
-    def getbysocket(self, socket_id):
-        res = EInterface.sendCommand("AT#SCFG?")[socket_id - 1].split(",")[1]
-        return self._contexts[int(res) - 1]
-
-    def reset_all(self):
-        for c in self.items():
-            c.reset()
-
-contexts = Contexts()
+_context = Context(1)
 
 
 def init(apn):
+    """
+    Initialize GPRS functionality.
+
+    Configures the GPRS module and contexts. This does not connect to the GPRS network.
+
+    @param apn: Access Point Name to use for connecting.
+    """
     # Add an ACCEPT rule for all addresses. It's not clear if this is a bug in the firmware or not, but it is
     # required in order to connect with the _socket module from Python 2.7. It does not seem to be required when
     # doing socket communication using AT commands.
@@ -83,32 +70,34 @@ def init(apn):
         if e.getErrorCode() != 4:
             raise
 
-    # Activate contexts
-    for context in contexts:
-        while True:
-            log.debug('Activating context %i' % context.cid)
-            try:
-                EInterface.sendCommand('AT+CGDCONT={},"IP","{}"'.format(context.cid, apn))
-                break
-            except EInterface.TimeoutException:
-                log.error("Timeout, trying again")
-                time.sleep(3)
-            except EInterface.CommandError, e:
-                pass
+    # Configure contexts
+    _context.apn = apn
 
-    # Enable GPRS
-    attempts = 0
-    while attempts < 5:
-        try:
-            attempts += 1
-            EInterface.sendCommand('AT#GPRS=1')
-            break
-        except EInterface.CommandError, e:
-            if e.getErrorCode() == 149: # Not authorized
-                log.error('Error activating GPRS. Trying again')
-                time.sleep(3)
-                continue
-            break
-        except EInterface.TimeoutException:
-            log.error("Timeout, trying again")
-            time.sleep(3)
+
+def connect():
+    """
+    Connect to GPRS network.
+
+    @return:
+        True if connection was successful, False otherwise.
+    """
+    try:
+        log.info('Activating context %i' % _context.cid)
+        EInterface.sendCommand('AT+CGDCONT={},"IP","{}"'.format(_context.cid, _context.apn))
+        log.info('Enabling GPRS')
+        EInterface.sendCommand('AT#GPRS=1')
+    except EInterface.EInterfaceError, e:
+        log.error('Error, ' + str(e))
+
+    return is_connected()
+
+
+def is_connected():
+    """
+    Check if GPRS connection is established and that the device has an IP address.
+
+    @return:
+        True if device has an IP address, False otherwise.
+    """
+    ip = _context.ip()
+    return len(ip) and ip != '0.0.0.0'
