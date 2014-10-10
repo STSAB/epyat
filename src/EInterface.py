@@ -133,7 +133,10 @@ def sendCommand(command, timeout=5, debug=False):
         if res.rfind("%s+CME ERROR:" % NEWLINE) != -1:
             start = res.rfind("%s+CME ERROR:" % NEWLINE) + 14
             code = res[start:].strip()
-            raise CommandError(int(code))
+            try:
+                raise CommandError(int(code))
+            except ValueError:
+                raise EInterfaceError()
 
         # Read until a string is read that indicates the response end
         if res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) != -1:
