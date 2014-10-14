@@ -12,9 +12,11 @@ SC_OK = 200
 SC_ACCEPTED = 202
 SC_NOT_MODIFIED = 304
 SC_BAD_REQUEST = 400
+SC_UNAUTHORIZED = 401
 SC_FORBIDDEN = 403
 SC_NOT_FOUND = 404
 SC_INTERNAL_SERVER_ERROR = 500
+
 
 class EHttpError(Exception):
     """
@@ -40,6 +42,7 @@ class ResponseError(EHttpError):
     """
     HTTP response error.
     """
+
     def __init__(self, code, message):
         self.status_code, self.message = code, message
 
@@ -74,9 +77,10 @@ class Session:
             # Assemble HTTP headers.
             headers['Content-length'] = payload_length
             headers['Host'] = "%s:%s" % (host, port)
-            sock.sendall('POST %s HTTP/1.1\r\n' % _get_request(selector, parameters))
-            sock.sendall('\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()))
-            sock.sendall('\r\n\r\n')
+            sock.sendall(
+                'POST %s HTTP/1.1\r\n' % _get_request(selector, parameters) +
+                '\r\n'.join('%s: %s' % (key, value) for (key, value) in headers.iteritems()) +
+                '\r\n\r\n')
             return Payload(self, sock, payload_length), self._response
         except socket.gaierror, e:
             raise ConnectionError(e.strerror)
@@ -96,9 +100,10 @@ class Session:
 
             # Assemble HTTP headers.
             headers['Host'] = "%s:%s" % (host, port)
-            sock.sendall('GET %s HTTP/1.1\r\n' % _get_request(selector, parameters))
-            sock.sendall('\r\n'.join('%s: %s' % (k, v) for (k, v) in headers.iteritems()))
-            sock.sendall('\r\n\r\n')
+            sock.sendall(
+                'GET %s HTTP/1.1\r\n' % _get_request(selector, parameters) +
+                '\r\n'.join('%s: %s' % (k, v) for (k, v) in headers.iteritems()) +
+                '\r\n\r\n')
             # Request complete. No further writing will be done.
             # sock.shutdown(socket.SHUT_WR)
         except socket.gaierror, e:
@@ -143,7 +148,7 @@ class Response:
         self._content_length = 0
 
     def __repr__(self):
-        return '<Response [%s]>' % (self.status_code)
+        return '<Response [%s]>' % self.status_code
 
     def _create_header(self, res):
         if self.headers is not None:
@@ -196,8 +201,7 @@ class Response:
         if (self.status != CLOSED
             and self.headers
             and 'Content-Length' in self.headers
-            and self._content_length >= int(self.headers['Content-Length'])
-        ):
+            and self._content_length >= int(self.headers['Content-Length'])):
             self.status = CLOSED
             # No further reading to be done.
             # self._socket.shutdown(socket.SHUT_RD)
@@ -282,7 +286,6 @@ def _connect(host, port, timeout=None):
     try:
         # Bind socket to context ID. This uses a non-standard socket option which will fail when executed
         # outside of the Telit environment.
-        log.debug("Setting socket options")
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_CONTEXTID, 1)
     except AttributeError:
         # Error binding socket to context. This only applies to Telit platforms and should not happen.
@@ -295,9 +298,9 @@ def _connect(host, port, timeout=None):
     # if timeout:
     # sock.settimeout(timeout)
     # Disable TCP delay
-    log.debug('Setting nodelay')
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     # Connect
     log.debug('Connecting')
-    sock.connect((host, port))
+    sock.connect(sa)
     return sock
