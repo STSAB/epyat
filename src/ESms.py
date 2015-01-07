@@ -322,6 +322,9 @@ def readMessage(index):
 
     header = res[0].split(",")
 
+    # Erase AT command which gets echoed back.
+    header[0] = header[0].replace('+CMGR: ', '')
+
     status = header[0]
 
     if (len(res) == 2):
@@ -374,6 +377,9 @@ def readMessages(status="ALL"):
         if (inHeader):
             # Read header
             header = line.split(",")
+
+            # Erase AT command which gets echoed back.
+            header[0] = header[0].replace('+CMGL: ', '')
 
             inHeader = False
         else:
