@@ -421,6 +421,9 @@ def sendMessage(message):
     res = EInterface.sendCommand(
         "AT+CMGS=\"%s\",%d\r%s%s" % (message.getNumber(), message.getNumberType(), message.getText(), chr(0x1A)))
 
+    # Erase AT command which gets echoed back.
+    res[0] = res[0].replace('+CMGS: ', '')
+
     return int(res[0])
 
 
