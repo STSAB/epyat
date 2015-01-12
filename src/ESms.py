@@ -325,13 +325,14 @@ def readMessage(index):
     # Erase AT command which gets echoed back.
     header[0] = header[0].replace('+CMGR: ', '')
 
-    status = header[0]
+    status = header[0].replace('"', '')
 
     if (len(res) == 2):
         # Received or stored message
 
         # Extract data from header. Arrival might be None if a stored message is read.
-        number = header[1]
+        # Number might be wrapped inside quotation marks. Clean them out since we will handle that ourselves.
+        number = header[1].replace('"', '')
 
         if (len(header[2]) == 0):
             # Received message
@@ -385,8 +386,8 @@ def readMessages(status="ALL"):
         else:
             # Read data from header
             index = int(header[0])
-            status = header[1]
-            number = header[2]
+            status = header[1].replace('"', '')
+            number = header[2].replace('"', '')
 
             # Create message
             message = SmsMessage(number, line, status)
