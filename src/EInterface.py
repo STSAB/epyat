@@ -26,7 +26,6 @@ the exception is documented.
 """
 
 import MDM
-import EBuffer
 import ETimer
 
 NEWLINE = "\r\n"
@@ -112,10 +111,6 @@ def sendCommand(command, timeout=5, debug=False):
     if debug:
         print command
 
-    # Clear input buffer before reading
-    #do we need this?
-    EBuffer.receive(1)
-
     #log.debug(command)
 
     MDM.send(command, 5)
@@ -125,7 +120,7 @@ def sendCommand(command, timeout=5, debug=False):
     res = ""
     while ETimer.time() < timeout:
         #print "loop"
-        res = res + EBuffer.receive(1)
+        res = res + MDM.read()
 
         if res.rfind("%sERROR%s" % (NEWLINE, NEWLINE)) != -1:
             raise CommandError(0)
