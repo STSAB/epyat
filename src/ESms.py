@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -420,7 +420,8 @@ def sendMessage(message):
     """
 
     res = EInterface.sendCommand(
-        "AT+CMGS=\"%s\",%d\r%s%s" % (message.getNumber(), message.getNumberType(), message.getText(), chr(0x1A)))
+        "AT+CMGS=\"%s\",%d\r%s%s" % (message.getNumber(), message.getNumberType(), message.getText(), chr(0x1A)),
+        timeout=30)
 
     # Erase AT command which gets echoed back.
     res[0] = res[0].replace('+CMGS: ', '')
@@ -475,6 +476,6 @@ def storeMessage(message):
 
     # The character 0x1A terminates the input and causes the module to stored the message
     res = EInterface.sendCommand("AT+CMGW=\"%s\",%d,\"%s\"\r%s%s" % (
-    message.getNumber(), message.getNumberType(), message.getStatus(), message.getText(), chr(0x1A)))
+        message.getNumber(), message.getNumberType(), message.getStatus(), message.getText(), chr(0x1A)))
     message._index = int(res[0])
     return int(res[0])
