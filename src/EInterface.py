@@ -31,6 +31,17 @@ import ETimer
 NEWLINE = "\r\n"
 """ Line seperator used by the module. """
 
+OK = "%sOK%s" % (NEWLINE, NEWLINE)
+""" OK reply. """
+
+ERROR = "%sERROR%s" % (NEWLINE, NEWLINE)
+""" Error reply. """
+
+CME_ERROR = "%s+CME ERROR:" % NEWLINE
+""" Extended error reply. """
+
+PROMPT = "> "
+""" Prompt reply. """
 
 class EInterfaceError(Exception):
     pass
@@ -111,22 +122,19 @@ def sendCommand(command, timeout=5, debug=False):
     if debug:
         print command
 
-    #log.debug(command)
-
     MDM.send(command, 5)
     MDM.send(NEWLINE, 5)
 
     timeout = ETimer.time() + timeout
     res = ""
     while ETimer.time() < timeout:
-        #print "loop"
         res = res + MDM.read()
 
-        if res.rfind("%sERROR%s" % (NEWLINE, NEWLINE)) != -1:
+        if ERROR in res:
             raise CommandError(0)
 
-        if res.rfind("%s+CME ERROR:" % NEWLINE) != -1:
-            start = res.rfind("%s+CME ERROR:" % NEWLINE) + 14
+        if CME_ERROR in res:
+            start = res.rfind(CME_ERROR) + 14
             code = res[start:].strip()
             try:
                 raise CommandError(int(code))
@@ -134,10 +142,9 @@ def sendCommand(command, timeout=5, debug=False):
                 raise EInterfaceError()
 
         # Read until a string is read that indicates the response end
-        if res.rfind("%sOK%s" % (NEWLINE, NEWLINE)) != -1:
+        if PROMPT in res or OK in res:
             end = res.rfind("%sOK%s" % (NEWLINE, NEWLINE))
             return __responseToTuple(res[:end].strip(), command);
-            #return res[:end].strip().split(NEWLINE)
 
     raise TimeoutException #("Timeout reached while reading from the AT interface")
 
