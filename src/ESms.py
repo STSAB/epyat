@@ -419,9 +419,11 @@ def sendMessage(message):
         to a network, the destination number is invalid etc.).
     """
 
-    res = EInterface.sendCommand(
-        "AT+CMGS=\"%s\",%d\r%s%s" % (message.getNumber(), message.getNumberType(), message.getText(), chr(0x1A)),
-        timeout=30)
+    # Message initiator.
+    EInterface.sendCommand("AT+CMGS=\"%s\",%d\r" % (message.getNumber(), message.getNumberType()))
+
+    # Message content.
+    res = EInterface.sendCommand("%s%s" % (message.getText(), chr(0x1A)), timeout=30)
 
     # Erase AT command which gets echoed back.
     res[0] = res[0].replace('+CMGS: ', '')
