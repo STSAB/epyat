@@ -1,6 +1,6 @@
 import EInterface
 from logger import log
-import time
+
 
 class Context:
     def __init__(self, cid):
@@ -8,16 +8,12 @@ class Context:
         self.apn = ''
 
     def configure(self, apn, pdp_addr="0.0.0.0", d_comp=0, h_comp=0):
-        res = EInterface.sendCommand('AT+CGDCONT=%i,"IP",%s,%s,%i,%i' % (self.cid, apn, pdp_addr, d_comp, h_comp), 20)
+        EInterface.sendCommand('AT+CGDCONT=%i,"IP",%s,%s,%i,%i' % (self.cid, apn, pdp_addr, d_comp, h_comp), 20)
 
     def configured(self):
-        #res is like [''] or ('(1)',) or ('(1,2)',)
-        # remove "(" ")" and split on ","
-        #res like [''] or ('(2)',) or ('(1,2)',)
         return str(self.cid) in EInterface.sendCommand("AT#CGPADDR=?", 20)[0][1:-1].split(",")
 
     def reset(self):
-        self.deactivate()
         EInterface.sendCommand('AT+CGDCONT=%i' % self.cid)
 
     def active(self):
@@ -32,23 +28,12 @@ class Context:
 
     def deactivate(self):
         if self.configured() and self.active():
-            for socket in self.get_sockets():
-                EInterface.sendCommand("AT#SH=%s" % socket)
             EInterface.sendCommand("AT#SGACT=%s,0" % self.cid)
 
     def ip(self):
         if not self.configured():
             return ""
         return EInterface.sendCommand("AT#CGPADDR=%s" % self.cid)[0].split(",")[1].replace('"', "")
-
-    def get_sockets(self):
-        sockets = []
-        res = EInterface.sendCommand("AT#SCFG?")
-        for row in res:
-            row = row.split(",")
-            if int(row[1]) == self.cid:
-                sockets.append(int(row[0]))
-        return sockets
 
 _context = Context(1)
 

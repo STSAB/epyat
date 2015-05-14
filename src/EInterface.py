@@ -122,8 +122,7 @@ def sendCommand(command, timeout=5, debug=False):
     if debug:
         print command
 
-    MDM.send(command, 5)
-    MDM.send(NEWLINE, 5)
+    MDM.send(command + NEWLINE, 5)
 
     timeout = ETimer.time() + timeout
     res = ""

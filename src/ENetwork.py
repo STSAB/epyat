@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -130,17 +130,17 @@ def getConnectedOperator(code=0):
         {"mode": int, "operator": int/string}
     """
 
-    if (code):
+    if code:
         EInterface.sendCommand("AT+COPS=3,2")
     else:
         EInterface.sendCommand("AT+COPS=3,0")
 
     res = EInterface.sendCommand("AT+COPS?")[0].split(",")
 
-    if (len(res) <= 1):
+    if len(res) <= 1:
         return {"mode": int(res[0]), "operator": None}
     else:
-        if (code):
+        if code:
             return {"mode": int(res[0]), "operator": int(res[2][1:-1])}
         else:
             return {"mode": int(res[0]), "operator": res[2][1:-1]}
@@ -169,7 +169,7 @@ def getNetworkStatus():
     res = EInterface.sendCommand("AT+CREG?")[0].split(",")
     status = int(res[1])
 
-    if (status == NETWORK_REGISTERED_HOME or status == NETWORK_REGISTERED_ROAMING):
+    if status == NETWORK_REGISTERED_HOME or status == NETWORK_REGISTERED_ROAMING:
         return {"status": status, "area": res[2], "cell": res[3]}
     else:
         return {"status": status, "area": None, "cell": None}
