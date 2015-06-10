@@ -2,21 +2,9 @@ from logger import log
 import _socket as socket
 
 CHUNK_SIZE = 1024
-
 SENDING = 1
 RECEIVING = 2
 CLOSED = 3
-
-# HTTP status codes
-SC_OK = 200
-SC_ACCEPTED = 202
-SC_NOT_MODIFIED = 304
-SC_BAD_REQUEST = 400
-SC_UNAUTHORIZED = 401
-SC_FORBIDDEN = 403
-SC_NOT_FOUND = 404
-SC_INTERNAL_SERVER_ERROR = 500
-
 
 class EHttpError(Exception):
     """
