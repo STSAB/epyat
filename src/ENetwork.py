@@ -198,7 +198,7 @@ def getSignalQuality():
     return {"strength": int(res[0]), "error": int(res[1])}
 
 
-def setOperator(mode, operator):
+def setOperator(mode, operator=None):
     """
     Sets the network operator and registration mode.
 
@@ -216,8 +216,10 @@ def setOperator(mode, operator):
     @type operator:
         int/string
     """
-
-    if (type(operator) == int):
-        EInterface.sendCommand("AT+COPS=%d,2,%d" % (mode, operator))
+    if operator is not None:
+        if (type(operator) == int):
+            EInterface.sendCommand("AT+COPS=%d,2,%d" % (mode, operator))
+        else:
+            EInterface.sendCommand("AT+COPS=%d,0,\"%s\"" % (mode, operator))
     else:
-        EInterface.sendCommand("AT+COPS=%d,0,\"%s\"" % (mode, operator))
+        EInterface.sendCommand("AT+COPS=%d" % mode)
