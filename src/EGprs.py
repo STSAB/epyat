@@ -73,8 +73,17 @@ def connect():
         EInterface.sendCommand('AT#GPRS=1')
     except EInterface.EInterfaceError, e:
         log.error('Error, ' + str(e))
+        return False
 
     return is_connected()
+
+
+def disconnect():
+    try:
+        log.info('Disabling GPRS')
+        EInterface.sendCommand('AT#GPRS=0')
+    except EInterface.EInterfaceError, e:
+        log.error('Error, ' + str(e))
 
 
 def is_connected():
