@@ -88,7 +88,7 @@ def init():
     sendCommand("AT#SELINT=2")
 
 
-def sendCommand(command, timeout=5, debug=False):
+def sendCommand(command, timeout=5, debug=False, comm=MDM):
     """
     Sends a command to the module's AT-interface and waits for the response.
 
@@ -122,12 +122,12 @@ def sendCommand(command, timeout=5, debug=False):
     if debug:
         print command
 
-    MDM.send(command + NEWLINE, 5)
+    comm.send(command + NEWLINE, 5)
 
     timeout = ETimer.time() + timeout
     res = ""
     while ETimer.time() < timeout:
-        res = res + MDM.read()
+        res = res + comm.read()
 
         if ERROR in res:
             raise CommandError(0)
