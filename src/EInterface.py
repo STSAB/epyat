@@ -103,6 +103,8 @@ def sendCommand(command, timeout=5, debug=False, comm=MDM):
         Maximum time the function will try to read from the module.
     @param debug:
         Print the command to stdout before sending it.
+    @param comm:
+        Communication channel to use. Defaults to MDM, but MDM2 can be used.
     @type timeout:
         int
 
@@ -126,24 +128,28 @@ def sendCommand(command, timeout=5, debug=False, comm=MDM):
 
     timeout = ETimer.time() + timeout
     res = ""
-    while ETimer.time() < timeout:
-        res = res + comm.read()
+    try:
+        while ETimer.time() < timeout:
+            res = res + comm.read()
 
-        if ERROR in res:
-            raise CommandError(0)
+            if ERROR in res:
+                raise CommandError(0)
 
-        if CME_ERROR in res:
-            start = res.rfind(CME_ERROR) + 14
-            code = res[start:].strip()
-            try:
-                raise CommandError(int(code))
-            except ValueError:
-                raise EInterfaceError()
+            if CME_ERROR in res:
+                start = res.rfind(CME_ERROR) + 14
+                code = res[start:].strip()
+                try:
+                    raise CommandError(int(code))
+                except ValueError:
+                    raise EInterfaceError()
 
-        # Read until a string is read that indicates the response end
-        if PROMPT in res or OK in res:
-            end = res.rfind("%sOK%s" % (NEWLINE, NEWLINE))
-            return __responseToTuple(res[:end].strip(), command);
+            # Read until a string is read that indicates the response end
+            if PROMPT in res or OK in res:
+                end = res.rfind("%sOK%s" % (NEWLINE, NEWLINE))
+                return __responseToTuple(res[:end].strip(), command);
+    finally:
+        if debug:
+            print res
 
     raise TimeoutException #("Timeout reached while reading from the AT interface")
 
