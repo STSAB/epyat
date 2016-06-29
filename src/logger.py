@@ -50,6 +50,14 @@ class _Logging:
     def critical(self, msg):
         self._writelog(msg, CRITICAL)
 
+    """
+    Logs an exception with the level ERROR to this logger in the following format:
+
+    socket.gaierror: Error connecting.
+    """
+    def exception(self, exc):
+        self._writelog('{}.{}: {}'.format(exc.__module__, exc.__class__.__name__, exc), ERROR)
+
     def _writelog(self, msg, loglevel):
         if loglevel >= self.loglevel:
             col_start = COLOR_SEQ % (30 + COLORS[loglevel]) if self.use_colors else ''
