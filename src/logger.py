@@ -56,7 +56,8 @@ class _Logging:
     socket.gaierror: Error connecting.
     """
     def exception(self, exc):
-        self._writelog('{}.{}: {}'.format(exc.__module__, exc.__class__.__name__, exc), ERROR)
+        cls = exc.__class__
+        self._writelog('{}.{}: {}'.format(cls.__module__, cls.__name__, exc), ERROR)
 
     def _writelog(self, msg, loglevel):
         if loglevel >= self.loglevel:
@@ -71,3 +72,8 @@ class _Logging:
             sys.stdout.write('{}{} {} {} {}{}\r\n'.format(col_start, ETimer.time(), thread.get_ident(), filename, str(msg), col_end))
 
 log = _Logging()
+log.d = log.debug
+log.i = log.info
+log.w = log.warning
+log.e = log.error
+log.x = log.exception
