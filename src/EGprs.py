@@ -24,7 +24,7 @@ class Context:
         if self.configured() and not self.active():
             EInterface.sendCommand("AT#SGACT=%s,1" % self.cid, 200)
             if not self.active():
-                log.warning("Activation failed")
+                log.w("Activation failed")
 
     def deactivate(self):
         if self.configured() and self.active():
@@ -67,12 +67,12 @@ def connect():
         True if connection was successful, False otherwise.
     """
     try:
-        log.info('Activating context %i' % _context.cid)
+        log.i('Activating context %i' % _context.cid)
         EInterface.sendCommand('AT+CGDCONT={},"IP","{}"'.format(_context.cid, _context.apn))
-        log.info('Enabling GPRS')
+        log.i('Enabling GPRS')
         EInterface.sendCommand('AT#GPRS=1')
     except EInterface.EInterfaceError, e:
-        log.error(e)
+        log.e(e)
         return False
 
     return is_connected()
@@ -80,10 +80,10 @@ def connect():
 
 def disconnect():
     try:
-        log.info('Disabling GPRS')
+        log.i('Disabling GPRS')
         EInterface.sendCommand('AT#GPRS=0')
     except EInterface.EInterfaceError, e:
-        log.error(e)
+        log.e(e)
 
 
 def is_connected():

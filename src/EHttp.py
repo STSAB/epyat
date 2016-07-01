@@ -71,7 +71,7 @@ class Session:
 
         try:
             sock = _connect(host, port, timeout=timeout)
-            log.debug('Connected')
+            log.d('Connected')
             self._response = Response(sock)
 
             # Assemble HTTP headers.
@@ -95,7 +95,7 @@ class Session:
 
         try:
             sock = _connect(host, port, timeout=timeout)
-            log.debug('Connected')
+            log.d('Connected')
             self._response = Response(sock)
 
             # Assemble HTTP headers.
@@ -166,7 +166,7 @@ class Response:
             version, self.status_code, self._headers = self._headers.split(' ', 2)
             self.status_code = int(self.status_code)
         except ValueError, e:
-            log.error("Error reading status: %s" % e)
+            log.e("Error reading status: %s" % e)
             return ''
 
         # Parse header section to convert each header to a dictionary entry.
@@ -206,7 +206,7 @@ class Response:
             # No further reading to be done.
             # self._socket.shutdown(socket.SHUT_RD)
             # self._socket.settimeout(None)
-            log.debug('Closing socket')
+            log.d('Closing socket')
             self._socket.close()
         return self.status
 
@@ -301,6 +301,6 @@ def _connect(host, port, timeout=None):
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     # Connect
-    log.debug('Connecting')
+    log.d('Connecting')
     sock.connect(sa)
     return sock

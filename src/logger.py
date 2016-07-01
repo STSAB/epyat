@@ -72,8 +72,8 @@ class _Logging:
             sys.stdout.write('{}{} {} {} {}{}\r\n'.format(col_start, ETimer.time(), thread.get_ident(), filename, str(msg), col_end))
 
 log = _Logging()
-log.d = log.debug
-log.i = log.info
-log.w = log.warning
-log.e = log.error
+log.d = log.d
+log.i = log.i
+log.w = log.w
+log.e = log.e
 log.x = log.exception
