@@ -3,7 +3,6 @@ from logger import log
 #log.setloglevel(2)
 import unittest
 import EInterface
-import ESettings
 import EGprs
 
 MDM.send("AT+CMEE=1\r\n", 10)

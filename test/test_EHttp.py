@@ -1,6 +1,5 @@
 import unittest
 import EHttp
-import ESettings
 from logger import log
 
 
