@@ -1,8 +1,9 @@
 import EInterface
-from logger import log
 
 CTX_ID = 1
-
+"""
+GPRS context ID. 0 is reserved for GSM.
+"""
 
 def init():
     """
@@ -20,7 +21,7 @@ def init():
             raise
 
 
-def connect(apn):
+def configure(apn):
     """
     Connect to GPRS network.
 
@@ -28,11 +29,20 @@ def connect(apn):
         True if connection was successful, False otherwise.
     """
     EInterface.sendCommand('AT+CGDCONT={},"IP","{}"'.format(CTX_ID, apn))
-    EInterface.sendCommand('AT#GPRS=1')
 
 
-def disconnect():
-    EInterface.sendCommand('AT#GPRS=0')
+def activate():
+    """
+    Activate GPRS context and connect to operator.
+    """
+    EInterface.sendCommand('AT#SGACT={},1'.format(CTX_ID))
+
+
+def deactivate():
+    """
+    Deactivate GPRS context and disconnect from operator.
+    """
+    EInterface.sendCommand('AT#SGACT={},0'.format(CTX_ID))
 
 
 def is_connected():
