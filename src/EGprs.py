@@ -53,8 +53,8 @@ def is_connected():
         True if device has an IP address, False otherwise.
     """
     res = EInterface.sendCommand("AT#CGPADDR=%s" % CTX_ID)
-    if ',' not in res:
+    if len(res) == 0 or ',' not in res[0]:
         return False
-    
+
     ip = res[0].split(",")[1].replace('"', "")
     return len(ip) and ip != '0.0.0.0'
