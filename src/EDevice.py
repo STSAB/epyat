@@ -110,10 +110,10 @@ def reboot():
     """
     Reboots the module.
 
-    Command: AT#REBOOT
+    Command: AT#ENHRST=1,0
     """
 
-    return EInterface.sendCommand("AT#REBOOT")[0]
+    return EInterface.sendCommand("AT#ENHRST=1,0")[0]
 
 
 def shutdown():
