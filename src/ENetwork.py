@@ -166,10 +166,11 @@ def getNetworkStatus():
 
     EInterface.sendCommand("AT+CREG=2")
 
-    res = EInterface.sendCommand("AT+CREG?")[0].split(",")
+    res = EInterface.sendCommand("AT+CREG?")
+    res = res[0].split(",")
     status = int(res[1])
 
-    if status == NETWORK_REGISTERED_HOME or status == NETWORK_REGISTERED_ROAMING:
+    if len(res) > 2 and (status == NETWORK_REGISTERED_HOME or status == NETWORK_REGISTERED_ROAMING):
         return {"status": status, "area": res[2], "cell": res[3]}
     else:
         return {"status": status, "area": None, "cell": None}
