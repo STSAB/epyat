@@ -20,6 +20,20 @@ def init():
         if e.getErrorCode() != 4:
             raise
 
+def ping(target):
+    """
+    Pings a target and returns a tuple of the IP address an latency on success.
+    On failure this returns nothing.
+
+    Response: #PING: <replyId>,<Ip Address>,<replyTime>,<ttl>
+
+    :param target:
+    :return:
+    """
+    res = EInterface.sendCommand('AT#PING,"{}",1'.format(target))
+    res = res[0].split(',')
+    return (res[1].strip('"'), int(res[2]))
+
 
 def configure(apn):
     """
