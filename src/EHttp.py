@@ -208,7 +208,9 @@ class Response:
             # self._socket.shutdown(socket.SHUT_RD)
             # self._socket.settimeout(None)
             log.d('Closing socket')
+            self._socket.shutdown(socket.SHUT_RDWR)
             self._socket.close()
+            self._socket = None
         return self.status
 
     def content_length(self):
