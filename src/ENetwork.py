@@ -96,7 +96,7 @@ def getAvailableOperators():
     """
 
     # Remove list of supported modes and formats
-    res = EInterface.sendCommand("AT+COPS=?", 60)[0].split(",,(")[0]
+    res = EInterface.sendCommand("AT+COPS=?", timeout=30)[0].split(",,(")[0]
 
     # Remove first an last brackets
     res = res[1:-1]
@@ -217,10 +217,13 @@ def setOperator(mode, operator=None):
     @type operator:
         int/string
     """
+    req = ''
     if operator is not None:
         if (type(operator) == int):
-            EInterface.sendCommand("AT+COPS=%d,2,%d" % (mode, operator))
+            req = "AT+COPS=%d,2,%d" % (mode, operator)
         else:
-            EInterface.sendCommand("AT+COPS=%d,0,\"%s\"" % (mode, operator))
+            req = "AT+COPS=%d,0,\"%s\"" % (mode, operator)
     else:
-        EInterface.sendCommand("AT+COPS=%d" % mode)
+        req = "AT+COPS=%d" % mode
+
+    EInterface.sendCommand(req, timeout=30)

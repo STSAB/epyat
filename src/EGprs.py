@@ -30,7 +30,7 @@ def ping(target):
     :param target:
     :return:
     """
-    res = EInterface.sendCommand('AT#PING,"{}",1'.format(target))
+    res = EInterface.sendCommand('AT#PING="{}",1'.format(target))
     res = res[0].split(',')
     return (res[1].strip('"'), int(res[2]))
 
@@ -49,14 +49,14 @@ def activate():
     """
     Activate GPRS context and connect to operator.
     """
-    EInterface.sendCommand('AT#SGACT={},1'.format(CTX_ID))
+    EInterface.sendCommand('AT#SGACT={},1'.format(CTX_ID), timeout=10)
 
 
 def deactivate():
     """
     Deactivate GPRS context and disconnect from operator.
     """
-    EInterface.sendCommand('AT#SGACT={},0'.format(CTX_ID))
+    EInterface.sendCommand('AT#SGACT={},0'.format(CTX_ID), timeout=10)
 
 
 def is_connected():

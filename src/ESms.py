@@ -368,7 +368,7 @@ def readMessages(status="ALL"):
         tuple
     """
 
-    res = EInterface.sendCommand("AT+CMGL=\"%s\"" % status)
+    res = EInterface.sendCommand("AT+CMGL=\"%s\"" % status, timeout=50)
 
     inHeader = True
     header = None
