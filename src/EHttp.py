@@ -131,7 +131,7 @@ def _get_request(selector, parameters):
     @param parameters: Dictionary of string:string pairs which will be embedded into the request.
     @return: selector and parameters merged into a URL compatible request.
     """
-    request = quote(selector)
+    request = quote(selector, '=?&')
 
     if parameters:
         request = '%s?%s' % (request, '&'.join('%s=%s' % (quote(k), quote(v)) for (k, v) in parameters.iteritems()))
